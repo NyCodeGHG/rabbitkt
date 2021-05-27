@@ -21,13 +21,16 @@ import com.rabbitmq.client.AMQP
 import de.nycode.rabbitkt.exchange.ExchangeBuilder
 import de.nycode.rabbitkt.queue.QueueBuilder
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.reactive.asFlow
 import kotlinx.coroutines.reactive.asPublisher
 import kotlinx.coroutines.reactor.awaitSingle
 import org.reactivestreams.Publisher
 import reactor.core.publisher.Mono
 import reactor.rabbitmq.BindingSpecification
 import reactor.rabbitmq.OutboundMessage
+import reactor.rabbitmq.OutboundMessageResult
 import reactor.rabbitmq.Sender
 import java.io.Closeable
 import kotlin.contracts.ExperimentalContracts
@@ -217,12 +220,66 @@ public value class CoroutineSender(private val sender: Sender) : Closeable {
     /**
      * Send outbound messages.
      * If you want to to send messages via a flow, use [sendFlow].
+     * When you want to make sure the messages were sent correctly,
+     * use [sendAndConfirm] or [sendAndConfirmAsync].
+     * This member function is just like fire and forget.
      * @param messages the messages to send
      */
-    public suspend fun send(vararg messages: OutboundMessage) {
-        sendReactive(flowOf(*messages).asPublisher()).awaitSingle()
-    }
+    public suspend fun send(vararg messages: OutboundMessage): Unit = sendFlow(flowOf(*messages))
 
+    private fun sendReactiveAndConfirm(messages: Publisher<OutboundMessage>) =
+        sender.sendWithPublishConfirms(messages)
+
+    /**
+     * Sends all messages from the [messages] flow and suspends until
+     * all message were sent and confirmed by the broker.
+     * [action] is called for every confirmation by the broker.
+     * @param messages the messages to send via a [Flow]
+     * @param action the action which gets called for every confirmation response.
+     */
+    public suspend fun sendAndConfirm(
+        messages: Flow<OutboundMessage>,
+        action: suspend (OutboundMessageResult<OutboundMessage>) -> Unit = {}
+    ): Unit =
+        sendReactiveAndConfirm(messages.asPublisher()).asFlow().collect(action)
+
+    /**
+     * Send all [messages] from a [Flow] to your broker and
+     * receive the confirmation responses in another [Flow].
+     * @param messages the messages to send via a [Flow]
+     * @return a [Flow] of message confirmations sent by the Broker
+     */
+    public fun sendAndConfirmAsync(
+        messages: Flow<OutboundMessage>
+    ): Flow<OutboundMessageResult<OutboundMessage>> =
+        sendReactiveAndConfirm(messages.asPublisher()).asFlow()
+
+    /**
+     * Sends all [messages] to your broker and
+     * suspends until we received all confirmations that every message arrived.
+     * The desired [action] gets called for every arrived message
+     * @param messages the messages to send
+     * @param action the action which gets called for every response
+     */
+    public suspend fun sendAndConfirm(
+        vararg messages: OutboundMessage,
+        action: suspend (OutboundMessageResult<OutboundMessage>) -> Unit = {}
+    ): Unit = sendAndConfirmAsync(flowOf(*messages)).collect(action)
+
+    /**
+     * Sends all [messages] to your broker.
+     * You are able to check if they were sent correctly
+     * by using the returned [Flow].
+     * @param messages the messages to send
+     * @return A [Flow] of the confirmation responses.
+     */
+    public fun sendAndConfirmAsync(
+        vararg messages: OutboundMessage
+    ): Flow<OutboundMessageResult<OutboundMessage>> = sendAndConfirmAsync(flowOf(*messages))
+
+    /**
+     * Closes the underlying [Sender].
+     */
     override fun close(): Unit = sender.close()
 }
 
