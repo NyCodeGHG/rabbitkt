@@ -20,9 +20,14 @@ package de.nycode.rabbitkt.sender
 import com.rabbitmq.client.AMQP
 import de.nycode.rabbitkt.exchange.ExchangeBuilder
 import de.nycode.rabbitkt.queue.QueueBuilder
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.reactive.asPublisher
 import kotlinx.coroutines.reactor.awaitSingle
+import org.reactivestreams.Publisher
 import reactor.core.publisher.Mono
 import reactor.rabbitmq.BindingSpecification
+import reactor.rabbitmq.OutboundMessage
 import reactor.rabbitmq.Sender
 import java.io.Closeable
 import kotlin.contracts.ExperimentalContracts
@@ -187,6 +192,27 @@ public value class CoroutineSender(private val sender: Sender) : Closeable {
         ifUnused: Boolean,
         builder: ExchangeBuilder.() -> Unit
     ): AMQP.Exchange.DeleteOk = deleteExchangeReactive(name, ifUnused, builder).awaitSingle()
+
+    private fun sendReactive(messages: Publisher<OutboundMessage>) =
+        sender.send(messages)
+
+    /**
+     * Send a [Flow] of outbound messages.
+     * If you just want to send messages, use the [send]
+     * @param messages the message flow
+     */
+    public suspend fun sendFlow(messages: Flow<OutboundMessage>) {
+        sendReactive(messages.asPublisher()).awaitSingle()
+    }
+
+    /**
+     * Send outbound messages.
+     * If you want to to send messages via a flow, use [sendFlow].
+     * @param messages the messages to send
+     */
+    public suspend fun send(vararg messages: OutboundMessage) {
+        sendReactive(flowOf(*messages).asPublisher()).awaitSingle()
+    }
 
     override fun close(): Unit = sender.close()
 }
