@@ -171,6 +171,23 @@ public value class CoroutineSender(private val sender: Sender) : Closeable {
         queue: String
     ): AMQP.Queue.UnbindOk = unbindQueueReactive(exchange, routingKey, queue).awaitSingle()
 
+    private fun deleteExchangeReactive(
+        name: String,
+        ifUnused: Boolean = false,
+        builder: ExchangeBuilder.() -> Unit = {}
+    ) =
+        sender.deleteExchange(ExchangeBuilder(name).apply(builder).toExchangeSpecification(), ifUnused)
+
+    /**
+     * Delete an exchange.
+     * @param name the name of the exchange
+     */
+    public suspend fun deleteExchange(
+        name: String,
+        ifUnused: Boolean,
+        builder: ExchangeBuilder.() -> Unit
+    ): AMQP.Exchange.DeleteOk = deleteExchangeReactive(name, ifUnused, builder).awaitSingle()
+
     override fun close(): Unit = sender.close()
 }
 
