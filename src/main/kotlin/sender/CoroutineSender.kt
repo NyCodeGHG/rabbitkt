@@ -180,8 +180,12 @@ public value class CoroutineSender(private val sender: Sender) : Closeable {
         name: String,
         ifUnused: Boolean = false,
         builder: ExchangeBuilder.() -> Unit = {}
-    ) =
-        sender.deleteExchange(ExchangeBuilder(name).apply(builder).toExchangeSpecification(), ifUnused)
+    ): Mono<AMQP.Exchange.DeleteOk> {
+        contract {
+            callsInPlace(builder, InvocationKind.EXACTLY_ONCE)
+        }
+        return sender.deleteExchange(ExchangeBuilder(name).apply(builder).toExchangeSpecification(), ifUnused)
+    }
 
     /**
      * Delete an exchange.
@@ -191,7 +195,12 @@ public value class CoroutineSender(private val sender: Sender) : Closeable {
         name: String,
         ifUnused: Boolean,
         builder: ExchangeBuilder.() -> Unit
-    ): AMQP.Exchange.DeleteOk = deleteExchangeReactive(name, ifUnused, builder).awaitSingle()
+    ): AMQP.Exchange.DeleteOk {
+        contract {
+            callsInPlace(builder, InvocationKind.EXACTLY_ONCE)
+        }
+        return deleteExchangeReactive(name, ifUnused, builder).awaitSingle()
+    }
 
     private fun sendReactive(messages: Publisher<OutboundMessage>) =
         sender.send(messages)
