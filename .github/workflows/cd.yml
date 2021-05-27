@@ -1,0 +1,36 @@
+name: Gradle CD
+on:
+  push:
+    branches-ignore:
+      - main
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    name: Build
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup JDK
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'adopt'
+          java-version: 11
+      - name: Cache Gradle Packages
+        uses: actions/cache@v2
+        with:
+          path: |
+            builds
+            build
+            .gradle/caches
+            .gradle/wrapper
+            ~/.gradle/wrapper
+            ~/.gradle/caches
+          key: rabbitkt-${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            rabbitkt-${{ runner.os }}-gradle-
+      - name: Build and Publish with Gradle
+        run: ./gradlew build publish
+        env:
+          SONATYPE_USER: ${{ secrets.SONATYPE_USER }}
+          SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}

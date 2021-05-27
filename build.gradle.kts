@@ -1,6 +1,8 @@
 plugins {
     kotlin("jvm") version "1.5.10"
     dokka version "1.4.32"
+    `maven-publish`
+    signing
 }
 
 group = "de.nycode"
@@ -71,3 +73,5 @@ java {
         languageVersion.set(JavaLanguageVersion.of(projectJvmTarget))
     }
 }
+
+apply(from = "publishing.gradle.kts")
