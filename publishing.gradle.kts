@@ -19,8 +19,8 @@ apply(plugin = "org.jetbrains.dokka")
 apply(plugin = "org.gradle.maven-publish")
 apply(plugin = "org.gradle.signing")
 
-val sonatypeUsername = project.findProperty("sonatypeUsername")?.toString() ?: System.getenv("SONATYPE_USER")
-val sonatypePassword = project.findProperty("sonatypePassword")?.toString() ?: System.getenv("SONATYPE_PASSWORD")
+val sonatypeUsername = System.getenv("SONATYPE_USER")
+val sonatypePassword = System.getenv("SONATYPE_PASSWORD")
 
 val dokkaJar by tasks.registering(Jar::class) {
     dependsOn("dokkaHtml")
@@ -92,8 +92,8 @@ val configurePublishing: PublishingExtension.() -> Unit = {
 }
 
 val configureSigning: SigningExtension.() -> Unit = {
-    val signingKey = findProperty("signingKey")?.toString() ?: System.getenv("SIGNING_KEY")
-    val signingPassword = findProperty("signingPassword")?.toString() ?: System.getenv("SIGNING_PASSWORD")
+    val signingKey = System.getenv("SIGNING_KEY")
+    val signingPassword = System.getenv("SIGNING_PASSWORD")
     if (signingKey != null && signingPassword != null) {
         useInMemoryPgpKeys(
             String(java.util.Base64.getDecoder().decode(signingKey.toByteArray())),
