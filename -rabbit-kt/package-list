@@ -1,0 +1,67 @@
+$dokka.format:html-v1
+$dokka.linkExtension:html
+$dokka.location:de.nycode.rabbitkt.exchange////PointingToDeclaration/-rabbit-kt/de.nycode.rabbitkt.exchange/index.html
+$dokka.location:de.nycode.rabbitkt.exchange/ExchangeBuilder///PointingToDeclaration/-rabbit-kt/de.nycode.rabbitkt.exchange/-exchange-builder/index.html
+$dokka.location:de.nycode.rabbitkt.exchange/ExchangeBuilder/ExchangeBuilder/#kotlin.String#de.nycode.rabbitkt.exchange.ExchangeType#kotlin.Boolean#kotlin.Boolean#kotlin.Boolean#kotlin.Boolean#kotlin.collections.Map[kotlin.String,kotlin.Any]?/PointingToDeclaration/-rabbit-kt/de.nycode.rabbitkt.exchange/-exchange-builder/-exchange-builder.html
+$dokka.location:de.nycode.rabbitkt.exchange/ExchangeBuilder/arguments/#/PointingToDeclaration/-rabbit-kt/de.nycode.rabbitkt.exchange/-exchange-builder/arguments.html
+$dokka.location:de.nycode.rabbitkt.exchange/ExchangeBuilder/autoDelete/#/PointingToDeclaration/-rabbit-kt/de.nycode.rabbitkt.exchange/-exchange-builder/auto-delete.html
+$dokka.location:de.nycode.rabbitkt.exchange/ExchangeBuilder/durable/#/PointingToDeclaration/-rabbit-kt/de.nycode.rabbitkt.exchange/-exchange-builder/durable.html
+$dokka.location:de.nycode.rabbitkt.exchange/ExchangeBuilder/internal/#/PointingToDeclaration/-rabbit-kt/de.nycode.rabbitkt.exchange/-exchange-builder/internal.html
+$dokka.location:de.nycode.rabbitkt.exchange/ExchangeBuilder/name/#/PointingToDeclaration/-rabbit-kt/de.nycode.rabbitkt.exchange/-exchange-builder/name.html
+$dokka.location:de.nycode.rabbitkt.exchange/ExchangeBuilder/passive/#/PointingToDeclaration/-rabbit-kt/de.nycode.rabbitkt.exchange/-exchange-builder/passive.html
+$dokka.location:de.nycode.rabbitkt.exchange/ExchangeBuilder/toExchangeSpecification/#/PointingToDeclaration/-rabbit-kt/de.nycode.rabbitkt.exchange/-exchange-builder/to-exchange-specification.html
+$dokka.location:de.nycode.rabbitkt.exchange/ExchangeBuilder/type/#/PointingToDeclaration/-rabbit-kt/de.nycode.rabbitkt.exchange/-exchange-builder/type.html
+$dokka.location:de.nycode.rabbitkt.exchange/ExchangeType.DIRECT///PointingToDeclaration/-rabbit-kt/de.nycode.rabbitkt.exchange/-exchange-type/-d-i-r-e-c-t/index.html
+$dokka.location:de.nycode.rabbitkt.exchange/ExchangeType.DIRECT/name/#/PointingToDeclaration/-rabbit-kt/de.nycode.rabbitkt.exchange/-exchange-type/-d-i-r-e-c-t/name.html
+$dokka.location:de.nycode.rabbitkt.exchange/ExchangeType.DIRECT/ordinal/#/PointingToDeclaration/-rabbit-kt/de.nycode.rabbitkt.exchange/-exchange-type/-d-i-r-e-c-t/ordinal.html
+$dokka.location:de.nycode.rabbitkt.exchange/ExchangeType.FANOUT///PointingToDeclaration/-rabbit-kt/de.nycode.rabbitkt.exchange/-exchange-type/-f-a-n-o-u-t/index.html
+$dokka.location:de.nycode.rabbitkt.exchange/ExchangeType.FANOUT/name/#/PointingToDeclaration/-rabbit-kt/de.nycode.rabbitkt.exchange/-exchange-type/-f-a-n-o-u-t/name.html
+$dokka.location:de.nycode.rabbitkt.exchange/ExchangeType.FANOUT/ordinal/#/PointingToDeclaration/-rabbit-kt/de.nycode.rabbitkt.exchange/-exchange-type/-f-a-n-o-u-t/ordinal.html
+$dokka.location:de.nycode.rabbitkt.exchange/ExchangeType.HEADERS///PointingToDeclaration/-rabbit-kt/de.nycode.rabbitkt.exchange/-exchange-type/-h-e-a-d-e-r-s/index.html
+$dokka.location:de.nycode.rabbitkt.exchange/ExchangeType.HEADERS/name/#/PointingToDeclaration/-rabbit-kt/de.nycode.rabbitkt.exchange/-exchange-type/-h-e-a-d-e-r-s/name.html
+$dokka.location:de.nycode.rabbitkt.exchange/ExchangeType.HEADERS/ordinal/#/PointingToDeclaration/-rabbit-kt/de.nycode.rabbitkt.exchange/-exchange-type/-h-e-a-d-e-r-s/ordinal.html
+$dokka.location:de.nycode.rabbitkt.exchange/ExchangeType.TOPIC///PointingToDeclaration/-rabbit-kt/de.nycode.rabbitkt.exchange/-exchange-type/-t-o-p-i-c/index.html
+$dokka.location:de.nycode.rabbitkt.exchange/ExchangeType.TOPIC/name/#/PointingToDeclaration/-rabbit-kt/de.nycode.rabbitkt.exchange/-exchange-type/-t-o-p-i-c/name.html
+$dokka.location:de.nycode.rabbitkt.exchange/ExchangeType.TOPIC/ordinal/#/PointingToDeclaration/-rabbit-kt/de.nycode.rabbitkt.exchange/-exchange-type/-t-o-p-i-c/ordinal.html
+$dokka.location:de.nycode.rabbitkt.exchange/ExchangeType///PointingToDeclaration/-rabbit-kt/de.nycode.rabbitkt.exchange/-exchange-type/index.html
+$dokka.location:de.nycode.rabbitkt.publisher////PointingToDeclaration/-rabbit-kt/de.nycode.rabbitkt.publisher/index.html
+$dokka.location:de.nycode.rabbitkt.publisher//toList/org.reactivestreams.Publisher[TypeParam(bounds=[kotlin.Any?])]#/PointingToDeclaration/-rabbit-kt/de.nycode.rabbitkt.publisher/to-list.html
+$dokka.location:de.nycode.rabbitkt.publisher/CoroutinePublisher///PointingToDeclaration/-rabbit-kt/de.nycode.rabbitkt.publisher/-coroutine-publisher/index.html
+$dokka.location:de.nycode.rabbitkt.publisher/CoroutinePublisher/CoroutinePublisher/#org.reactivestreams.Publisher[TypeParam(bounds=[kotlin.Any])]/PointingToDeclaration/-rabbit-kt/de.nycode.rabbitkt.publisher/-coroutine-publisher/-coroutine-publisher.html
+$dokka.location:de.nycode.rabbitkt.publisher/CoroutinePublisher/consumeEach/#kotlin.coroutines.SuspendFunction1[TypeParam(bounds=[kotlin.Any]),kotlin.Unit]/PointingToDeclaration/-rabbit-kt/de.nycode.rabbitkt.publisher/-coroutine-publisher/consume-each.html
+$dokka.location:de.nycode.rabbitkt.publisher/CoroutinePublisher/publisher/#/PointingToDeclaration/-rabbit-kt/de.nycode.rabbitkt.publisher/-coroutine-publisher/publisher.html
+$dokka.location:de.nycode.rabbitkt.publisher/CoroutinePublisher/toFlow/#/PointingToDeclaration/-rabbit-kt/de.nycode.rabbitkt.publisher/-coroutine-publisher/to-flow.html
+$dokka.location:de.nycode.rabbitkt.publisher/CoroutinePublisher/toList/#/PointingToDeclaration/-rabbit-kt/de.nycode.rabbitkt.publisher/-coroutine-publisher/to-list.html
+$dokka.location:de.nycode.rabbitkt.queue////PointingToDeclaration/-rabbit-kt/de.nycode.rabbitkt.queue/index.html
+$dokka.location:de.nycode.rabbitkt.queue/QueueBuilder///PointingToDeclaration/-rabbit-kt/de.nycode.rabbitkt.queue/-queue-builder/index.html
+$dokka.location:de.nycode.rabbitkt.queue/QueueBuilder/QueueBuilder/#kotlin.String#kotlin.Boolean#kotlin.Boolean#kotlin.Boolean#kotlin.Boolean#kotlin.collections.Map[kotlin.String,kotlin.Any]?/PointingToDeclaration/-rabbit-kt/de.nycode.rabbitkt.queue/-queue-builder/-queue-builder.html
+$dokka.location:de.nycode.rabbitkt.queue/QueueBuilder/arguments/#/PointingToDeclaration/-rabbit-kt/de.nycode.rabbitkt.queue/-queue-builder/arguments.html
+$dokka.location:de.nycode.rabbitkt.queue/QueueBuilder/autoDelete/#/PointingToDeclaration/-rabbit-kt/de.nycode.rabbitkt.queue/-queue-builder/auto-delete.html
+$dokka.location:de.nycode.rabbitkt.queue/QueueBuilder/durable/#/PointingToDeclaration/-rabbit-kt/de.nycode.rabbitkt.queue/-queue-builder/durable.html
+$dokka.location:de.nycode.rabbitkt.queue/QueueBuilder/exclusive/#/PointingToDeclaration/-rabbit-kt/de.nycode.rabbitkt.queue/-queue-builder/exclusive.html
+$dokka.location:de.nycode.rabbitkt.queue/QueueBuilder/name/#/PointingToDeclaration/-rabbit-kt/de.nycode.rabbitkt.queue/-queue-builder/name.html
+$dokka.location:de.nycode.rabbitkt.queue/QueueBuilder/passive/#/PointingToDeclaration/-rabbit-kt/de.nycode.rabbitkt.queue/-queue-builder/passive.html
+$dokka.location:de.nycode.rabbitkt.queue/QueueBuilder/toQueueSpecification/#/PointingToDeclaration/-rabbit-kt/de.nycode.rabbitkt.queue/-queue-builder/to-queue-specification.html
+$dokka.location:de.nycode.rabbitkt.sender////PointingToDeclaration/-rabbit-kt/de.nycode.rabbitkt.sender/index.html
+$dokka.location:de.nycode.rabbitkt.sender//coroutine/reactor.rabbitmq.Sender#/PointingToDeclaration/-rabbit-kt/de.nycode.rabbitkt.sender/coroutine.html
+$dokka.location:de.nycode.rabbitkt.sender/CoroutineSender///PointingToDeclaration/-rabbit-kt/de.nycode.rabbitkt.sender/-coroutine-sender/index.html
+$dokka.location:de.nycode.rabbitkt.sender/CoroutineSender/CoroutineSender/#reactor.rabbitmq.Sender/PointingToDeclaration/-rabbit-kt/de.nycode.rabbitkt.sender/-coroutine-sender/-coroutine-sender.html
+$dokka.location:de.nycode.rabbitkt.sender/CoroutineSender/bindExchange/#kotlin.String#kotlin.String#kotlin.String/PointingToDeclaration/-rabbit-kt/de.nycode.rabbitkt.sender/-coroutine-sender/bind-exchange.html
+$dokka.location:de.nycode.rabbitkt.sender/CoroutineSender/bindQueue/#kotlin.String#kotlin.String#kotlin.String/PointingToDeclaration/-rabbit-kt/de.nycode.rabbitkt.sender/-coroutine-sender/bind-queue.html
+$dokka.location:de.nycode.rabbitkt.sender/CoroutineSender/close/#/PointingToDeclaration/-rabbit-kt/de.nycode.rabbitkt.sender/-coroutine-sender/close.html
+$dokka.location:de.nycode.rabbitkt.sender/CoroutineSender/declareExchange/#kotlin.String#kotlin.Function1[de.nycode.rabbitkt.exchange.ExchangeBuilder,kotlin.Unit]/PointingToDeclaration/-rabbit-kt/de.nycode.rabbitkt.sender/-coroutine-sender/declare-exchange.html
+$dokka.location:de.nycode.rabbitkt.sender/CoroutineSender/declareQueue/#kotlin.String#kotlin.Function1[de.nycode.rabbitkt.queue.QueueBuilder,kotlin.Unit]/PointingToDeclaration/-rabbit-kt/de.nycode.rabbitkt.sender/-coroutine-sender/declare-queue.html
+$dokka.location:de.nycode.rabbitkt.sender/CoroutineSender/unbindExchange/#kotlin.String#kotlin.String#kotlin.String/PointingToDeclaration/-rabbit-kt/de.nycode.rabbitkt.sender/-coroutine-sender/unbind-exchange.html
+$dokka.location:de.nycode.rabbitkt.sender/CoroutineSender/unbindQueue/#kotlin.String#kotlin.String#kotlin.String/PointingToDeclaration/-rabbit-kt/de.nycode.rabbitkt.sender/-coroutine-sender/unbind-queue.html
+$dokka.location:de.nycode.rabbitkt.utils////PointingToDeclaration/-rabbit-kt/de.nycode.rabbitkt.utils/index.html
+$dokka.location:de.nycode.rabbitkt.utils//withNIO/com.rabbitmq.client.ConnectionFactory#/PointingToDeclaration/-rabbit-kt/de.nycode.rabbitkt.utils/with-n-i-o.html
+$dokka.location:de.nycode.rabbitkt////PointingToDeclaration/-rabbit-kt/de.nycode.rabbitkt/index.html
+$dokka.location:de.nycode.rabbitkt/KotlinRabbit///PointingToDeclaration/-rabbit-kt/de.nycode.rabbitkt/-kotlin-rabbit/index.html
+$dokka.location:de.nycode.rabbitkt/KotlinRabbit/createSender/#kotlin.Function1[reactor.rabbitmq.SenderOptions,kotlin.Unit]/PointingToDeclaration/-rabbit-kt/de.nycode.rabbitkt/-kotlin-rabbit/create-sender.html
+de.nycode.rabbitkt
+de.nycode.rabbitkt.exchange
+de.nycode.rabbitkt.publisher
+de.nycode.rabbitkt.queue
+de.nycode.rabbitkt.sender
+de.nycode.rabbitkt.utils
+
