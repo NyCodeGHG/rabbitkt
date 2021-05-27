@@ -1,5 +1,6 @@
 plugins {
     kotlin("jvm") version "1.5.10"
+    dokka version "1.4.32"
 }
 
 group = "de.nycode"
