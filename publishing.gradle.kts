@@ -41,12 +41,20 @@ val configurePublishing: PublishingExtension.() -> Unit = {
             }
         }
     }
+    val branch = getGitBranch()
+
     publications {
         create<MavenPublication>("maven") {
             from(components["kotlin"])
             groupId = project.group.toString()
             artifactId = project.name.toString()
-            version = project.version.toString()
+            val projectVersion = project.version.toString()
+            val branch = getGitBranch()
+            if (projectVersion.endsWith("SNAPSHOT") && branch != "dev") {
+                version = "$projectVersion-$branch"
+            } else {
+                version = projectVersion
+            }
             artifact(dokkaJar)
             pom {
                 name.set(project.name)
@@ -84,8 +92,8 @@ val configurePublishing: PublishingExtension.() -> Unit = {
 }
 
 val configureSigning: SigningExtension.() -> Unit = {
-    val signingKey = findProperty("signingKey")?.toString()
-    val signingPassword = findProperty("signingPassword")?.toString()
+    val signingKey = findProperty("signingKey")?.toString() ?: System.getenv("SIGNING_KEY")
+    val signingPassword = findProperty("signingPassword")?.toString() ?: System.getenv("SIGNING_PASSWORD")
     if (signingKey != null && signingPassword != null) {
         useInMemoryPgpKeys(
             String(java.util.Base64.getDecoder().decode(signingKey.toByteArray())),
