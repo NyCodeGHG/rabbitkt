@@ -43,6 +43,13 @@ public value class CoroutineSender(private val sender: Sender) : Closeable {
         return sender.declareExchange(ExchangeBuilder(name).apply(builder).toExchangeSpecification())
     }
 
+    /**
+     * Declare an exchange with the specified name.
+     * Configure the Exchange with the builder.
+     * @param name the name of the exchange
+     * @param builder the configuration builder
+     * @return The RabbitMQ DeclareOk Result
+     */
     public suspend fun declareExchange(
         name: String,
         builder: ExchangeBuilder.() -> Unit = {}
@@ -63,6 +70,13 @@ public value class CoroutineSender(private val sender: Sender) : Closeable {
         return sender.declareQueue(QueueBuilder(name).apply(builder).toQueueSpecification())
     }
 
+    /**
+     * Declare a queue with the specified name.
+     * Configure the Queue with the builder.
+     * @param name the name of the queue
+     * @param builder the configuration builder
+     * @return The RabbitMQ DeclareOk Result
+     */
     public suspend fun declareQueue(name: String, builder: QueueBuilder.() -> Unit = {}): AMQP.Queue.DeclareOk {
         contract {
             callsInPlace(builder, InvocationKind.EXACTLY_ONCE)
@@ -80,6 +94,12 @@ public value class CoroutineSender(private val sender: Sender) : Closeable {
         )
     }
 
+    /**
+     * Bind an exchange to another exchange.
+     * @param exchangeFrom the exchange where the messages come from.
+     * @param routingKey the routing key used for this binding.
+     * @param exchangeTo the exchange where the messages are going to.
+     */
     public suspend fun bindExchange(
         exchangeFrom: String,
         routingKey: String,
@@ -96,6 +116,12 @@ public value class CoroutineSender(private val sender: Sender) : Closeable {
         return sender.bindQueue(BindingSpecification.queueBinding(exchange, routingKey, queue))
     }
 
+    /**
+     * Bind an exchange to a queue. This specified queue will be able to receive messages from this Exchange.
+     * @param exchange the exchange to bind.
+     * @param routingKey the routing key used for this binding.
+     * @param queue the queue which should receive messages from this exchange.
+     */
     public suspend fun bindQueue(
         exchange: String,
         routingKey: String,
@@ -111,6 +137,13 @@ public value class CoroutineSender(private val sender: Sender) : Closeable {
     ) =
         sender.unbindExchange(BindingSpecification.exchangeBinding(exchangeFrom, routingKey, exchangeTo))
 
+    /**
+     * Unbind an exchange from another Exchange. This is doing the opposite of [bindExchange]
+     * as it removes an existing binding between two exchanges.
+     * @param exchangeFrom the exchange where the messages come from.
+     * @param routingKey the routing key used for this binding.
+     * @param exchangeTo the exchange where the messages are going to.
+     */
     public suspend fun unbindExchange(
         exchangeFrom: String,
         routingKey: String,
@@ -125,6 +158,13 @@ public value class CoroutineSender(private val sender: Sender) : Closeable {
         queue: String
     ) = sender.unbindQueue(BindingSpecification.queueBinding(exchange, routingKey, queue))
 
+    /**
+     * Unbind an exchange from an existing queue. This is doing the opposite of [bindQueue]
+     * as it removes an existing binding between an exchange an a queue.
+     * @param exchange the exchange where the messages are coming from.
+     * @param routingKey the routing key used in the binding.
+     * @param queue the queue where the messages of the binding are going to.
+     */
     public suspend fun unbindQueue(
         exchange: String,
         routingKey: String,
