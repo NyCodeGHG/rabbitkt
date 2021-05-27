@@ -51,7 +51,7 @@ val configurePublishing: PublishingExtension.() -> Unit = {
             val projectVersion = project.version.toString()
             val branch = getGitBranch()
             if (projectVersion.endsWith("SNAPSHOT") && branch != "dev") {
-                version = "$projectVersion-$branch"
+                version = "$branch-$projectVersion"
             } else {
                 version = projectVersion
             }
