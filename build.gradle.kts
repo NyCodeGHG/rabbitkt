@@ -49,6 +49,21 @@ tasks {
     test {
         useJUnitPlatform()
     }
+    dokkaHtml {
+        moduleName.set("RabbitKt")
+        dokkaSourceSets {
+            configureEach {
+                jdkVersion.set(projectJvmTarget)
+                platform.set(org.jetbrains.dokka.Platform.jvm)
+
+                sourceLink {
+                    localDirectory.set(file("src/main/kotlin"))
+                    remoteUrl.set(uri("https://github.com/NyCodeGHG/rabbitkt/tree/main/src/main/kotlin").toURL())
+                    remoteLineSuffix.set("#L")
+                }
+            }
+        }
+    }
 }
 
 java {
