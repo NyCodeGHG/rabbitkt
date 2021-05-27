@@ -24,13 +24,14 @@ import kotlinx.coroutines.reactor.awaitSingle
 import reactor.core.publisher.Mono
 import reactor.rabbitmq.BindingSpecification
 import reactor.rabbitmq.Sender
+import java.io.Closeable
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
 
 @OptIn(ExperimentalContracts::class)
 @JvmInline
-public value class CoroutineSender(private val sender: Sender) : AutoCloseable {
+public value class CoroutineSender(private val sender: Sender) : Closeable {
 
     private fun declareExchangeReactive(
         name: String,
