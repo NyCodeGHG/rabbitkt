@@ -103,6 +103,21 @@ public value class CoroutineSender(private val sender: Sender) : AutoCloseable {
         return bindQueueReactive(exchange, routingKey, queue).awaitSingle()
     }
 
+    private fun unbindExchangeReactive(
+        exchangeFrom: String,
+        routingKey: String,
+        exchangeTo: String
+    ) =
+        sender.unbindExchange(BindingSpecification.exchangeBinding(exchangeFrom, routingKey, exchangeTo))
+
+    public suspend fun unbindExchange(
+        exchangeFrom: String,
+        routingKey: String,
+        exchangeTo: String
+    ): AMQP.Exchange.UnbindOk {
+        return unbindExchangeReactive(exchangeFrom, routingKey, exchangeTo).awaitSingle()
+    }
+
     override fun close(): Unit = sender.close()
 }
 
