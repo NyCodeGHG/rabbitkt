@@ -1,5 +1,6 @@
 plugins {
     kotlin("jvm") version "1.5.10"
+    kotlin("plugin.serialization") version "1.5.0"
     dokka version "1.4.32"
     `maven-publish`
     signing
@@ -19,6 +20,8 @@ dependencies {
     implementation("org.jetbrains.kotlinx", "kotlinx-coroutines-core", "1.5.0")
     implementation("org.jetbrains.kotlinx", "kotlinx-coroutines-reactor", "1.5.0")
 
+    implementation("org.jetbrains.kotlinx", "kotlinx-serialization-core", "1.2.1")
+
     // Test Dependencies
     testImplementation("org.junit.jupiter", "junit-jupiter-api", "5.7.2")
     testImplementation("org.junit.jupiter", "junit-jupiter-params", "5.7.2")
@@ -33,6 +36,10 @@ dependencies {
     testImplementation("org.testcontainers", "testcontainers")
     testImplementation("org.testcontainers", "junit-jupiter")
     testImplementation("org.testcontainers", "rabbitmq")
+
+    testImplementation("org.jetbrains.kotlinx", "kotlinx-serialization-json", "1.2.1")
+
+    testRuntimeOnly("org.slf4j", "slf4j-simple", "1.7.30")
 }
 
 kotlin {

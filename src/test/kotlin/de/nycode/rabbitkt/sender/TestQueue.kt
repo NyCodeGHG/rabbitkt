@@ -15,26 +15,12 @@
  *
  */
 
-package de.nycode.rabbitkt.exchange
+package de.nycode.rabbitkt.sender
 
-import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
-/**
- * Builtin Exchange Types in RabbitMQ.
- * See [RabbitMQ Docs](https://www.rabbitmq.com/tutorials/amqp-concepts.html#exchanges).
- */
 @Serializable
-public enum class ExchangeType {
-    @SerialName("direct")
-    DIRECT,
-
-    @SerialName("fanout")
-    FANOUT,
-
-    @SerialName("topic")
-    TOPIC,
-
-    @SerialName("headers")
-    HEADERS
-}
+data class TestQueue(
+    val name: String,
+    val messages: Int
+)
