@@ -28,13 +28,15 @@ val dokkaJar by tasks.registering(Jar::class) {
     from(tasks.getByName("dokkaHtml"))
 }
 
+val isSnapshot = version.toString().endsWith("SNAPSHOT")
+
 val configurePublishing: PublishingExtension.() -> Unit = {
     repositories {
         maven {
             name = "oss"
             val releasesRepoUrl = uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
             val snapshotsRepoUrl = uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")
-            url = if (version.toString().endsWith("SNAPSHOT")) snapshotsRepoUrl else releasesRepoUrl
+            url = if (isSnapshot) snapshotsRepoUrl else releasesRepoUrl
             credentials {
                 username = sonatypeUsername
                 password = sonatypePassword
@@ -44,12 +46,14 @@ val configurePublishing: PublishingExtension.() -> Unit = {
     val branch = getGitBranch()
 
     publications {
+        if (branch != "main" && !isSnapshot) {
+            return@publications
+        }
         create<MavenPublication>("maven") {
             from(components["kotlin"])
             groupId = project.group.toString()
             artifactId = project.name.toString()
             val projectVersion = project.version.toString()
-            val branch = getGitBranch()
             if (projectVersion.endsWith("SNAPSHOT") && branch != "dev") {
                 version = "$branch-$projectVersion"
             } else {
