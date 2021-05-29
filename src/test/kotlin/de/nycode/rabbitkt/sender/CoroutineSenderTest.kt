@@ -70,14 +70,22 @@ internal class CoroutineSenderTest {
         expectThat(rabbit).hasQueue(testQueueName)
     }
 
+    private suspend fun declareAndBindExchange(
+        fromExchange: String,
+        toExchange: String,
+        testRoutingKey: String
+    ) {
+        sender!!.declareExchange(fromExchange)
+        sender!!.declareExchange(toExchange)
+        sender!!.bindExchange(fromExchange, testRoutingKey, toExchange)
+    }
+
     @Test
     fun bindExchange(): Unit = runBlocking {
         val fromExchange = "test_exchange"
         val toExchange = "test_another_exchange"
         val testRoutingKey = "test_routing_key"
-        sender!!.declareExchange(fromExchange)
-        sender!!.declareExchange(toExchange)
-        sender!!.bindExchange(fromExchange, testRoutingKey, toExchange)
+        declareAndBindExchange(fromExchange, toExchange, testRoutingKey)
 
         expectThat(rabbit).hasBinding {
             sourceName = fromExchange
@@ -107,10 +115,24 @@ internal class CoroutineSenderTest {
         }
     }
 
-//    @Test
-//    fun unbindExchange() {
-//    }
-//
+    @Test
+    fun unbindExchange(): Unit = runBlocking {
+        val fromExchange = "test_exchange"
+        val toExchange = "test_another_exchange"
+        val testRoutingKey = "test_routing_key"
+        declareAndBindExchange(fromExchange, toExchange, testRoutingKey)
+
+        sender!!.unbindExchange(fromExchange, testRoutingKey, toExchange)
+
+        expectThat(rabbit).not().hasBinding {
+            sourceName = fromExchange
+            sourceKind = EXCHANGE
+            destinationName = toExchange
+            destinationKind = EXCHANGE
+            routingKey = testRoutingKey
+        }
+    }
+
 //    @Test
 //    fun unbindQueue() {
 //    }
