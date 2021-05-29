@@ -20,6 +20,7 @@ package de.nycode.rabbitkt.sender
 import com.rabbitmq.client.ConnectionFactory
 import de.nycode.rabbitkt.KotlinRabbit
 import de.nycode.rabbitkt.sender.BindingKind.EXCHANGE
+import de.nycode.rabbitkt.sender.BindingKind.QUEUE
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.BeforeAll
@@ -87,10 +88,25 @@ internal class CoroutineSenderTest {
         }
     }
 
-//    @Test
-//    fun bindQueue() {
-//    }
-//
+    @Test
+    fun bindQueue() = runBlocking {
+        val exchange = "test_exchange"
+        val testRoutingKey = "test_routing_key"
+        val queue = "test_queue"
+
+        sender!!.declareExchange(exchange)
+        sender!!.declareQueue(queue)
+        sender!!.bindQueue(exchange, testRoutingKey, queue)
+
+        expectThat(rabbit).hasBinding {
+            sourceName = exchange
+            sourceKind = EXCHANGE
+            destinationName = queue
+            destinationKind = QUEUE
+            routingKey = testRoutingKey
+        }
+    }
+
 //    @Test
 //    fun unbindExchange() {
 //    }
