@@ -32,4 +32,30 @@ jobs:
           restore-keys: |
             rabbitkt-${{ runner.os }}-gradle-
       - name: Build with Gradle
-        run: ./gradlew build
+        run: ./gradlew assemble
+  test:
+    runs-on: ubuntu-latest
+    name: Test
+    needs: [build]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup JDK
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'adopt'
+          java-version: 11
+      - name: Cache Gradle Packages
+        uses: actions/cache@v2
+        with:
+          path: |
+            builds
+            build
+            .gradle/caches
+            .gradle/wrapper
+            ~/.gradle/wrapper
+            ~/.gradle/caches
+          key: rabbitkt-${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle.kts', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            rabbitkt-${{ runner.os }}-gradle-
+      - name: Runs Tests with Gradle
+        run: ./gradlew check
