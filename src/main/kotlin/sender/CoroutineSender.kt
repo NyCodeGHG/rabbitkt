@@ -278,6 +278,11 @@ public value class CoroutineSender(private val sender: Sender) : Closeable {
     ): Flow<OutboundMessageResult<OutboundMessage>> = sendAndConfirmAsync(flowOf(*messages))
 
     /**
+     * Returns the underlying [Sender]
+     */
+    public fun asSender(): Sender = sender
+
+    /**
      * Closes the underlying [Sender].
      */
     override fun close(): Unit = sender.close()
