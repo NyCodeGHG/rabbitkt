@@ -51,17 +51,6 @@ internal class CoroutineSenderTest {
         private val rabbit = TestRabbitMQContainer("rabbitmq:3.8.16-management-alpine")
     }
 
-    private fun createReceiver(): CoroutineReceiver {
-        return KotlinRabbit.createReceiver {
-            connectionFactory(ConnectionFactory().apply {
-                host = rabbit.host
-                port = rabbit.amqpPort
-                username = rabbit.adminUsername
-                password = rabbit.adminPassword
-            })
-        }.coroutine
-    }
-
     @BeforeEach
     fun setup() {
         sender = KotlinRabbit.createSender {
@@ -82,14 +71,14 @@ internal class CoroutineSenderTest {
     }
 
     @Test
-    fun declareExchange(): Unit = runBlocking {
+    fun `Declaring an exchange should work`(): Unit = runBlocking {
         val testExchangeName = "test_exchange"
         sender!!.declareExchange(testExchangeName, DIRECT)
         expectThat(rabbit).hasExchange(testExchangeName)
     }
 
     @Test
-    fun declareQueue(): Unit = runBlocking {
+    fun `Declaring a queue should work`(): Unit = runBlocking {
         val testQueueName = "test_queue"
         sender!!.declareQueue(testQueueName)
         expectThat(rabbit).hasQueue(testQueueName)
@@ -106,7 +95,7 @@ internal class CoroutineSenderTest {
     }
 
     @Test
-    fun bindExchange(): Unit = runBlocking {
+    fun `Binding an exchange to another exchange should work`(): Unit = runBlocking {
         val fromExchange = "test_exchange"
         val toExchange = "test_another_exchange"
         val testRoutingKey = "test_routing_key"
@@ -128,7 +117,7 @@ internal class CoroutineSenderTest {
     }
 
     @Test
-    fun bindQueue() = runBlocking {
+    fun `Binding an exchange to a queue should work`() = runBlocking {
         val exchange = "test_exchange"
         val testRoutingKey = "test_routing_key"
         val queue = "test_queue"
@@ -145,7 +134,7 @@ internal class CoroutineSenderTest {
     }
 
     @Test
-    fun unbindExchange(): Unit = runBlocking {
+    fun `Unbinding an exchange to exchange binding should work`(): Unit = runBlocking {
         val fromExchange = "test_exchange"
         val toExchange = "test_another_exchange"
         val testRoutingKey = "test_routing_key"
@@ -167,7 +156,7 @@ internal class CoroutineSenderTest {
     }
 
     @Test
-    fun unbindQueue(): Unit = runBlocking {
+    fun `Unbinding an exchange to queue binding should work`(): Unit = runBlocking {
         val exchange = "test_exchange"
         val testRoutingKey = "test_routing_key"
         val queue = "test_queue"
@@ -190,7 +179,7 @@ internal class CoroutineSenderTest {
     }
 
     @Test
-    fun deleteExchange(): Unit = runBlocking {
+    fun `Delete an exchange should work`(): Unit = runBlocking {
         val exchangeName = "test_exchange"
 
         sender!!.declareExchange(exchangeName, DIRECT)
@@ -203,7 +192,7 @@ internal class CoroutineSenderTest {
     }
 
     @Test
-    fun sendFlow(): Unit = runBlocking {
+    fun `Sending messages with a flow should work`(): Unit = runBlocking {
         val exchangeName = "test_exchange"
         val queueName = "test_queue"
         sender!!.declareExchange(exchangeName, DIRECT) {
@@ -220,7 +209,7 @@ internal class CoroutineSenderTest {
     }
 
     @Test
-    fun send(): Unit = runBlocking {
+    fun `Sending a simple message should work`(): Unit = runBlocking {
         val exchangeName = "test_exchange"
         val queueName = "test_queue"
         sender!!.declareExchange(exchangeName, DIRECT) {
@@ -237,7 +226,7 @@ internal class CoroutineSenderTest {
     }
 
     @Test
-    fun sendAndConfirm(): Unit = runBlocking {
+    fun `Sending messages with confirmation should work`(): Unit = runBlocking {
         val exchangeName = "test_exchange"
         val queueName = "test_queue"
         sender!!.declareExchange(exchangeName, DIRECT)
@@ -266,7 +255,7 @@ internal class CoroutineSenderTest {
     }
 
     @Test
-    fun sendAndConfirmAsync(): Unit = runBlocking {
+    fun `Sending an confirmation of messages should work async`(): Unit = runBlocking {
         val exchangeName = "test_exchange"
         val queueName = "test_queue"
 
@@ -294,12 +283,4 @@ internal class CoroutineSenderTest {
             .decodeToString()
         expectThat(result).isEqualTo(result)
     }
-
-//    @Test
-//    fun testSendAndConfirm() {
-//    }
-//
-//    @Test
-//    fun testSendAndConfirmAsync() {
-//    }
 }
