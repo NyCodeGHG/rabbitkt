@@ -1,66 +1,149 @@
 name: Gradle CI
-on:
-  workflow_dispatch:
-  push:
-  pull_request:
-    types:
-      - opened
-      - synchronize
+on: [ push, pull_request ]
 
 jobs:
+
+  gradleValidation:
+    name: Gradle Wrapper
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fetch Sources
+        uses: actions/checkout@v2
+
+      - name: Gradle Wrapper Validation
+        uses: gradle/wrapper-validation-action@v1
+
   build:
     runs-on: ubuntu-latest
+    needs: gradleValidation
     name: Build
     steps:
-      - uses: actions/checkout@v2
+      - name: Fetch Sources
+        uses: actions/checkout@v2
+
       - name: Setup JDK
         uses: actions/setup-java@v2
         with:
           distribution: 'adopt'
           java-version: 11
-      - name: Cache Gradle Packages
-        uses: actions/cache@v2
+
+      # Cache Gradle dependencies
+      - name: Setup Gradle Dependencies Cache
+        uses: actions/cache@v2.1.6
         with:
-          path: |
-            builds
-            build
-            .gradle/caches
-            .gradle/wrapper
-            ~/.gradle/wrapper
-            ~/.gradle/caches
-          key: rabbitkt-${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle.kts', '**/gradle-wrapper.properties') }}
-          restore-keys: |
-            rabbitkt-${{ runner.os }}-gradle-
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-caches-${{ hashFiles('**/*.gradle', '**/*.gradle.kts', 'gradle.properties') }}
+
+      # Cache Gradle Wrapper
+      - name: Setup Gradle Wrapper Cache
+        uses: actions/cache@v2.1.6
+        with:
+          path: ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}
+
       - name: Build with Gradle
         run: ./gradlew assemble
   test:
     runs-on: ubuntu-latest
     name: Test
-    needs: [build]
+    needs: build
     steps:
-      - uses: actions/checkout@v2
+      - name: Fetch Sources
+        uses: actions/checkout@v2
+
       - name: Setup JDK
         uses: actions/setup-java@v2
         with:
           distribution: 'adopt'
           java-version: 11
-      - name: Cache Gradle Packages
-        uses: actions/cache@v2
+
+      # Cache Gradle dependencies
+      - name: Setup Gradle Dependencies Cache
+        uses: actions/cache@v2.1.6
         with:
-          path: |
-            builds
-            build
-            .gradle/caches
-            .gradle/wrapper
-            ~/.gradle/wrapper
-            ~/.gradle/caches
-          key: rabbitkt-${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle.kts', '**/gradle-wrapper.properties') }}
-          restore-keys: |
-            rabbitkt-${{ runner.os }}-gradle-
-      - name: Runs Tests with Gradle
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-caches-${{ hashFiles('**/*.gradle', '**/*.gradle.kts', 'gradle.properties') }}
+
+      # Cache Gradle Wrapper
+      - name: Setup Gradle Wrapper Cache
+        uses: actions/cache@v2.1.6
+        with:
+          path: ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}
+
+      - name: Run Tests
         run: ./gradlew check
-      - name: Publish Test Results
-        if: 'always()'
-        uses: mikepenz/action-junit-report@v2
+  publish-snapshot:
+    runs-on: ubuntu-latest
+    name: Publish Snapshot
+    needs: test
+    if: github.event_name != 'pull_request' && github.ref != 'refs/heads/main'
+    steps:
+      - name: Fetch Sources
+        uses: actions/checkout@v2
+
+      - name: Setup JDK
+        uses: actions/setup-java@v2
         with:
-          report_paths: '**/build/test-results/test/TEST-*.xml'
+          distribution: 'adopt'
+          java-version: 11
+
+      # Cache Gradle dependencies
+      - name: Setup Gradle Dependencies Cache
+        uses: actions/cache@v2.1.6
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-caches-${{ hashFiles('**/*.gradle', '**/*.gradle.kts', 'gradle.properties') }}
+
+      # Cache Gradle Wrapper
+      - name: Setup Gradle Wrapper Cache
+        uses: actions/cache@v2.1.6
+        with:
+          path: ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}
+
+      - name: Publish
+        run: ./gradlew build publish
+        env:
+          SONATYPE_USER: ${{ secrets.SONATYPE_USER }}
+          SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
+          SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
+          SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
+
+  publish-docs:
+    runs-on: ubuntu-latest
+    name: Publish Docs
+    needs: test
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    steps:
+      - name: Fetch Sources
+        uses: actions/checkout@v2
+
+      - name: Setup JDK
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'adopt'
+          java-version: 11
+
+      # Cache Gradle dependencies
+      - name: Setup Gradle Dependencies Cache
+        uses: actions/cache@v2.1.6
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-caches-${{ hashFiles('**/*.gradle', '**/*.gradle.kts', 'gradle.properties') }}
+
+      # Cache Gradle Wrapper
+      - name: Setup Gradle Wrapper Cache
+        uses: actions/cache@v2.1.6
+        with:
+          path: ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}
+
+      - name: Build Dokka Docs with Gradle
+        run: ./gradlew dokkaHtml
+
+      - name: Deploy Docs to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@4.1.3
+        with:
+          branch: gh-pages
+          folder: build/dokka/html
