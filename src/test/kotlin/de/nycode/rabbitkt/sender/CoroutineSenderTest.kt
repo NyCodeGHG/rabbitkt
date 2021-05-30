@@ -164,10 +164,19 @@ internal class CoroutineSenderTest {
         expectThat(rabbit).not().hasBinding(assertion)
     }
 
-//    @Test
-//    fun deleteExchange() {
-//    }
-//
+    @Test
+    fun deleteExchange(): Unit = runBlocking {
+        val exchangeName = "test_exchange"
+
+        sender!!.declareExchange(exchangeName)
+
+        expectThat(rabbit).hasExchange(exchangeName)
+
+        sender!!.deleteExchange(exchangeName, true) {}
+
+        expectThat(rabbit).not().hasExchange(exchangeName)
+    }
+
 //    @Test
 //    fun sendFlow() {
 //    }
