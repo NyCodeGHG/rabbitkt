@@ -78,6 +78,7 @@ internal class CoroutineSenderTest {
 
     @AfterEach
     fun tearDown() {
+        sender!!.close()
         rabbit.stop()
         rabbit.start()
     }

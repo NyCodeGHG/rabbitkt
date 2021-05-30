@@ -152,7 +152,7 @@ public value class CoroutineSender(private val sender: Sender) : Closeable {
         routingKey: String,
         exchangeTo: String
     ) =
-        sender.unbindExchange(BindingSpecification.exchangeBinding(exchangeFrom, routingKey, exchangeTo))
+        sender.unbindExchange(BindingSpecification.binding(exchangeFrom, routingKey, exchangeTo))
 
     /**
      * Unbind an exchange from another Exchange. This is doing the opposite of [bindExchange]
