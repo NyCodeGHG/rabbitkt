@@ -22,7 +22,7 @@ import kotlinx.serialization.json.Json
 import org.testcontainers.containers.RabbitMQContainer
 import strikt.api.*
 
-fun Assertion.Builder<RabbitMQContainer>.hasExchange(testExchangeName: String) {
+fun Assertion.Builder<out RabbitMQContainer>.hasExchange(testExchangeName: String) {
     assertThat("container should have exchange $testExchangeName") { container ->
         val result =
             Json.decodeFromString<List<TestExchange>>(
@@ -37,7 +37,7 @@ fun Assertion.Builder<RabbitMQContainer>.hasExchange(testExchangeName: String) {
     }
 }
 
-fun Assertion.Builder<RabbitMQContainer>.hasQueue(testQueueName: String) {
+fun Assertion.Builder<out RabbitMQContainer>.hasQueue(testQueueName: String) {
     assertThat("container should have queue $testQueueName") { container ->
         val result =
             Json.decodeFromString<List<TestQueue>>(
@@ -52,7 +52,7 @@ fun Assertion.Builder<RabbitMQContainer>.hasQueue(testQueueName: String) {
     }
 }
 
-fun Assertion.Builder<RabbitMQContainer>.hasBinding(builder: TestBinding.() -> Unit) {
+fun Assertion.Builder<out RabbitMQContainer>.hasBinding(builder: TestBinding.() -> Unit) {
     assertThat("container should have binding") { container ->
         val result =
             Json.decodeFromString<List<TestBinding>>(

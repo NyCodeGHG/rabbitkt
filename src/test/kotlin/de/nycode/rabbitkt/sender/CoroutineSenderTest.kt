@@ -29,7 +29,6 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.*
-import org.testcontainers.containers.RabbitMQContainer
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
 import reactor.rabbitmq.OutboundMessage
@@ -48,7 +47,7 @@ internal class CoroutineSenderTest {
     companion object {
         @Container
         @JvmStatic
-        private val rabbit = RabbitMQContainer("rabbitmq:3.8.16-management-alpine")
+        private val rabbit = TestRabbitMQContainer("rabbitmq:3.8.16-management-alpine")
     }
 
     @BeforeEach
