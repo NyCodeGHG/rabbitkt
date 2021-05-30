@@ -39,7 +39,7 @@ dependencies {
 
     testImplementation("org.jetbrains.kotlinx", "kotlinx-serialization-json", "1.2.1")
 
-    testRuntimeOnly("org.slf4j", "slf4j-simple", "1.7.30")
+    testRuntimeOnly("ch.qos.logback", "logback-classic", "1.2.3")
 }
 
 kotlin {
