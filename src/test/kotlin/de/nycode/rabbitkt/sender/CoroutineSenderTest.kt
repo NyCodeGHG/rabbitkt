@@ -204,7 +204,6 @@ internal class CoroutineSenderTest {
     }
 
     @Test
-    @Timeout(2, unit = TimeUnit.SECONDS)
     fun sendFlow(): Unit = runBlocking {
         val exchangeName = "test_exchange"
         val queueName = "test_queue"
