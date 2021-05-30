@@ -96,15 +96,19 @@ internal class CoroutineSenderTest {
         }
     }
 
+    private suspend fun declareAndBindQueue(exchange: String, queue: String, testRoutingKey: String) {
+        sender!!.declareExchange(exchange)
+        sender!!.declareQueue(queue)
+        sender!!.bindQueue(exchange, testRoutingKey, queue)
+    }
+
     @Test
     fun bindQueue() = runBlocking {
         val exchange = "test_exchange"
         val testRoutingKey = "test_routing_key"
         val queue = "test_queue"
 
-        sender!!.declareExchange(exchange)
-        sender!!.declareQueue(queue)
-        sender!!.bindQueue(exchange, testRoutingKey, queue)
+        declareAndBindQueue(exchange, queue, testRoutingKey)
 
         expectThat(rabbit).hasBinding {
             sourceName = exchange
@@ -122,21 +126,44 @@ internal class CoroutineSenderTest {
         val testRoutingKey = "test_routing_key"
         declareAndBindExchange(fromExchange, toExchange, testRoutingKey)
 
-        sender!!.unbindExchange(fromExchange, testRoutingKey, toExchange)
-
-        expectThat(rabbit).not().hasBinding {
+        val assertion: TestBinding.() -> Unit = {
             sourceName = fromExchange
             sourceKind = EXCHANGE
             destinationName = toExchange
             destinationKind = EXCHANGE
             routingKey = testRoutingKey
         }
+
+        expectThat(rabbit).hasBinding(assertion)
+
+        sender!!.unbindExchange(fromExchange, testRoutingKey, toExchange)
+
+        expectThat(rabbit).not().hasBinding(assertion)
     }
 
-//    @Test
-//    fun unbindQueue() {
-//    }
-//
+    @Test
+    fun unbindQueue(): Unit = runBlocking {
+        val exchange = "test_exchange"
+        val testRoutingKey = "test_routing_key"
+        val queue = "test_queue"
+
+        declareAndBindQueue(exchange, queue, testRoutingKey)
+
+        val assertion: TestBinding.() -> Unit = {
+            sourceName = exchange
+            sourceKind = EXCHANGE
+            destinationName = queue
+            destinationKind = QUEUE
+            routingKey = testRoutingKey
+        }
+
+        expectThat(rabbit).hasBinding(assertion)
+
+        sender!!.unbindQueue(exchange, testRoutingKey, queue)
+
+        expectThat(rabbit).not().hasBinding(assertion)
+    }
+
 //    @Test
 //    fun deleteExchange() {
 //    }
