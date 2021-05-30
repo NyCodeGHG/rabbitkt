@@ -37,6 +37,9 @@ import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
 
+public inline val Sender.coroutine: CoroutineSender
+    get() = CoroutineSender(this)
+
 @OptIn(ExperimentalContracts::class)
 @JvmInline
 public value class CoroutineSender(private val sender: Sender) : Closeable {
@@ -287,5 +290,3 @@ public value class CoroutineSender(private val sender: Sender) : Closeable {
      */
     override fun close(): Unit = sender.close()
 }
-
-public val Sender.coroutine: CoroutineSender get() = CoroutineSender(this)

@@ -26,31 +26,8 @@ import reactor.rabbitmq.AcknowledgableDelivery
 import reactor.rabbitmq.Receiver
 import java.io.Closeable
 
-@JvmInline
-public value class AcknowledgeHandler internal constructor(
-    private val acknowledgableDelivery: AcknowledgableDelivery
-) {
-
-    /**
-     * The underlying delivery of this handler.
-     */
-    public val delivery: Delivery
-        get() = acknowledgableDelivery
-
-    /**
-     * Acknowledges the delivery.
-     * @param multiple acknowledge multiple messages or not
-     */
-    public fun ack(multiple: Boolean = false): Unit = acknowledgableDelivery.ack(multiple)
-
-    /**
-     * Rejects the delivery.
-     * @param multiple acknowledge multiple messages or not.
-     * @param requeue requeue the message into the broker or not.
-     */
-    public fun reject(multiple: Boolean = false, requeue: Boolean): Unit =
-        acknowledgableDelivery.nack(multiple, requeue)
-}
+public inline val Receiver.coroutine: CoroutineReceiver
+    get() = CoroutineReceiver(this)
 
 @JvmInline
 public value class CoroutineReceiver(private val receiver: Receiver) : Closeable {
@@ -103,4 +80,31 @@ public value class CoroutineReceiver(private val receiver: Receiver) : Closeable
             .collect {
                 handler(AcknowledgeHandler(it))
             }
+
+}
+
+@JvmInline
+public value class AcknowledgeHandler internal constructor(
+    private val acknowledgableDelivery: AcknowledgableDelivery
+) {
+
+    /**
+     * The underlying delivery of this handler.
+     */
+    public val delivery: Delivery
+        get() = acknowledgableDelivery
+
+    /**
+     * Acknowledges the delivery.
+     * @param multiple acknowledge multiple messages or not
+     */
+    public fun ack(multiple: Boolean = false): Unit = acknowledgableDelivery.ack(multiple)
+
+    /**
+     * Rejects the delivery.
+     * @param multiple acknowledge multiple messages or not.
+     * @param requeue requeue the message into the broker or not.
+     */
+    public fun reject(multiple: Boolean = false, requeue: Boolean): Unit =
+        acknowledgableDelivery.nack(multiple, requeue)
 }

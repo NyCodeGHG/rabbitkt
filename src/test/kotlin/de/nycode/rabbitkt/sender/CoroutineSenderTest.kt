@@ -22,6 +22,7 @@ import de.nycode.rabbitkt.KotlinRabbit
 import de.nycode.rabbitkt.exchange.ExchangeType.FANOUT
 import de.nycode.rabbitkt.queue.Queue
 import de.nycode.rabbitkt.receiver.CoroutineReceiver
+import de.nycode.rabbitkt.receiver.coroutine
 import de.nycode.rabbitkt.sender.BindingKind.EXCHANGE
 import de.nycode.rabbitkt.sender.BindingKind.QUEUE
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -32,7 +33,6 @@ import org.junit.jupiter.api.*
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
 import reactor.rabbitmq.OutboundMessage
-import reactor.rabbitmq.Receiver
 import strikt.api.*
 import strikt.assertions.*
 import java.util.concurrent.TimeUnit
@@ -48,6 +48,17 @@ internal class CoroutineSenderTest {
         @Container
         @JvmStatic
         private val rabbit = TestRabbitMQContainer("rabbitmq:3.8.16-management-alpine")
+    }
+
+    private fun createReceiver(): CoroutineReceiver {
+        return KotlinRabbit.createReceiver {
+            connectionFactory(ConnectionFactory().apply {
+                host = rabbit.host
+                port = rabbit.amqpPort
+                username = rabbit.adminUsername
+                password = rabbit.adminPassword
+            })
+        }.coroutine
     }
 
     @BeforeEach
@@ -208,18 +219,57 @@ internal class CoroutineSenderTest {
         val expected = "test_data"
         sender!!.sendFlow(flowOf(OutboundMessage(exchangeName, "", expected.encodeToByteArray())))
 
-        val message = CoroutineReceiver(Receiver()).consumeAutoAckFlow(Queue.withName(queueName)).single()
+        val message = createReceiver().consumeAutoAckFlow(Queue.withName(queueName)).single()
         expectThat(message.body.decodeToString()).isEqualTo(expected)
     }
 
-//    @Test
-//    fun send() {
-//    }
-//
-//    @Test
-//    fun sendAndConfirm() {
-//    }
-//
+    @Test
+    fun send(): Unit = runBlocking {
+        val exchangeName = "test_exchange"
+        val queueName = "test_queue"
+        sender!!.declareExchange(exchangeName) {
+            type = FANOUT
+            autoDelete = true
+        }
+        sender!!.declareQueue(queueName) {
+            autoDelete = true
+        }
+
+        expectThat(rabbit).hasExchange(exchangeName)
+
+        val expected = "test_data"
+        sender!!.send(OutboundMessage(exchangeName, "", expected.encodeToByteArray()))
+
+        val message = createReceiver().consumeAutoAckFlow(Queue.withName(queueName)).single()
+        expectThat(message.body.decodeToString()).isEqualTo(expected)
+    }
+
+    @Test
+    fun sendAndConfirm(): Unit = runBlocking {
+        val exchangeName = "test_exchange"
+        val queueName = "test_queue"
+        sender!!.declareExchange(exchangeName) {
+            type = FANOUT
+            autoDelete = true
+        }
+        sender!!.declareQueue(queueName) {
+            autoDelete = true
+        }
+
+        expectThat(rabbit).hasExchange(exchangeName)
+
+        val expected = "test_data"
+        var confirmed = false
+        sender!!.sendAndConfirm(OutboundMessage(exchangeName, "", expected.encodeToByteArray())) {
+            confirmed = true
+            expectThat(it.outboundMessage.body.decodeToString()).isEqualTo(expected)
+        }
+
+        expectThat(confirmed).isTrue()
+        val message = createReceiver().consumeAutoAckFlow(Queue.withName(queueName)).single()
+        expectThat(message.body.decodeToString()).isEqualTo(expected)
+    }
+
 //    @Test
 //    fun sendAndConfirmAsync() {
 //    }

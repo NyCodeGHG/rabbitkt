@@ -17,9 +17,7 @@
 
 package de.nycode.rabbitkt
 
-import reactor.rabbitmq.RabbitFlux
-import reactor.rabbitmq.Sender
-import reactor.rabbitmq.SenderOptions
+import reactor.rabbitmq.*
 
 public object KotlinRabbit {
 
@@ -33,4 +31,13 @@ public object KotlinRabbit {
         return RabbitFlux.createSender(senderOptions)
     }
 
+    /**
+     * Create a new [Receiver] and configure it with the [builder].
+     * @param builder The Configuration Block
+     * @return The newly created receiver
+     */
+    public fun createReceiver(builder: ReceiverOptions.() -> Unit = {}): Receiver {
+        val receiverOptions = ReceiverOptions().apply(builder)
+        return RabbitFlux.createReceiver(receiverOptions)
+    }
 }
