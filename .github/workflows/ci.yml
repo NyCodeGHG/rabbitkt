@@ -73,12 +73,6 @@ jobs:
 
       - name: Run Tests
         run: ./gradlew check
-
-      - name: Publish Test Report
-        if: always()
-        uses: EnricoMi/publish-unit-test-result-action@v1.17
-        with:
-          files: /**/test-results/**/TEST-*.xml
   publish-snapshot:
     runs-on: ubuntu-latest
     name: Publish Snapshot
