@@ -20,25 +20,23 @@ package de.nycode.rabbitkt.sender
 import com.rabbitmq.client.ConnectionFactory
 import de.nycode.rabbitkt.KotlinRabbit
 import de.nycode.rabbitkt.exchange.ExchangeType.DIRECT
-import de.nycode.rabbitkt.exchange.ExchangeType.FANOUT
-import de.nycode.rabbitkt.queue.Queue
 import de.nycode.rabbitkt.receiver.CoroutineReceiver
 import de.nycode.rabbitkt.receiver.coroutine
 import de.nycode.rabbitkt.sender.BindingKind.EXCHANGE
 import de.nycode.rabbitkt.sender.BindingKind.QUEUE
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.single
-import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.runBlocking
-import org.junit.jupiter.api.*
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.TestInstance
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
 import reactor.rabbitmq.OutboundMessage
 import strikt.api.*
 import strikt.assertions.*
-import java.util.concurrent.TimeUnit
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @Testcontainers
@@ -267,10 +265,36 @@ internal class CoroutineSenderTest {
         expectThat(confirmed).isTrue()
     }
 
-//    @Test
-//    fun sendAndConfirmAsync() {
-//    }
-//
+    @Test
+    fun sendAndConfirmAsync(): Unit = runBlocking {
+        val exchangeName = "test_exchange"
+        val queueName = "test_queue"
+
+        sender!!.declareExchange(exchangeName, DIRECT)
+        expectThat(rabbit).hasExchange(exchangeName)
+
+        sender!!.declareQueue(queueName)
+        expectThat(rabbit).hasQueue(queueName)
+
+        sender!!.bindQueue(exchangeName, "", queueName)
+
+        expectThat(rabbit).hasBinding {
+            sourceName = exchangeName
+            sourceKind = EXCHANGE
+            destinationName = queueName
+            destinationKind = QUEUE
+            routingKey = ""
+        }
+
+        val expected = "test_data"
+        val result = sender!!.sendAndConfirmAsync(OutboundMessage(exchangeName, "", expected.encodeToByteArray()))
+            .single()
+            .outboundMessage
+            .body
+            .decodeToString()
+        expectThat(result).isEqualTo(result)
+    }
+
 //    @Test
 //    fun testSendAndConfirm() {
 //    }
