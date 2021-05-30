@@ -26,8 +26,10 @@ import de.nycode.rabbitkt.receiver.coroutine
 import de.nycode.rabbitkt.sender.BindingKind.EXCHANGE
 import de.nycode.rabbitkt.sender.BindingKind.QUEUE
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.single
+import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.*
 import org.testcontainers.junit.jupiter.Container
@@ -258,6 +260,16 @@ internal class CoroutineSenderTest {
 
         expectThat(rabbit).hasExchange(exchangeName)
 
+        sender!!.bindQueue(exchangeName, "", queueName)
+
+        expectThat(rabbit).hasBinding {
+            sourceName = exchangeName
+            sourceKind = EXCHANGE
+            destinationName = queueName
+            destinationKind = QUEUE
+            routingKey = ""
+        }
+
         val expected = "test_data"
         var confirmed = false
         sender!!.sendAndConfirm(OutboundMessage(exchangeName, "", expected.encodeToByteArray())) {
@@ -266,8 +278,6 @@ internal class CoroutineSenderTest {
         }
 
         expectThat(confirmed).isTrue()
-        val message = createReceiver().consumeAutoAckFlow(Queue.withName(queueName)).single()
-        expectThat(message.body.decodeToString()).isEqualTo(expected)
     }
 
 //    @Test
