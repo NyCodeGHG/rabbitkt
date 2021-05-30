@@ -19,17 +19,24 @@ package de.nycode.rabbitkt.sender
 
 import com.rabbitmq.client.ConnectionFactory
 import de.nycode.rabbitkt.KotlinRabbit
+import de.nycode.rabbitkt.exchange.ExchangeType.FANOUT
+import de.nycode.rabbitkt.queue.Queue
+import de.nycode.rabbitkt.receiver.CoroutineReceiver
 import de.nycode.rabbitkt.sender.BindingKind.EXCHANGE
 import de.nycode.rabbitkt.sender.BindingKind.QUEUE
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.runBlocking
-import org.junit.jupiter.api.BeforeAll
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.TestInstance
+import org.junit.jupiter.api.*
 import org.testcontainers.containers.RabbitMQContainer
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
+import reactor.rabbitmq.OutboundMessage
+import reactor.rabbitmq.Receiver
 import strikt.api.*
+import strikt.assertions.*
+import java.util.concurrent.TimeUnit
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @Testcontainers
@@ -39,12 +46,12 @@ internal class CoroutineSenderTest {
     private var sender: CoroutineSender? = null
 
     companion object {
-        @JvmStatic
         @Container
+        @JvmStatic
         private val rabbit = RabbitMQContainer("rabbitmq:3.8.16-management-alpine")
     }
 
-    @BeforeAll
+    @BeforeEach
     fun setup() {
         sender = KotlinRabbit.createSender {
             connectionFactory(ConnectionFactory().apply {
@@ -54,6 +61,13 @@ internal class CoroutineSenderTest {
                 password = rabbit.adminPassword
             })
         }.coroutine
+    }
+
+    @AfterEach
+    fun tearDown() {
+        rabbit.execInContainer("rabbitmqctl", "stop_app")
+        rabbit.execInContainer("rabbitmqctl", "force_reset")
+        rabbit.execInContainer("rabbitmqctl", "start_app")
     }
 
     @Test
@@ -177,10 +191,28 @@ internal class CoroutineSenderTest {
         expectThat(rabbit).not().hasExchange(exchangeName)
     }
 
-//    @Test
-//    fun sendFlow() {
-//    }
-//
+    @Test
+    @Timeout(2, unit = TimeUnit.SECONDS)
+    fun sendFlow(): Unit = runBlocking {
+        val exchangeName = "test_exchange"
+        val queueName = "test_queue"
+        sender!!.declareExchange(exchangeName) {
+            type = FANOUT
+            autoDelete = true
+        }
+        sender!!.declareQueue(queueName) {
+            autoDelete = true
+        }
+
+        expectThat(rabbit).hasExchange(exchangeName)
+
+        val expected = "test_data"
+        sender!!.sendFlow(flowOf(OutboundMessage(exchangeName, "", expected.encodeToByteArray())))
+
+        val message = CoroutineReceiver(Receiver()).consumeAutoAckFlow(Queue.withName(queueName)).single()
+        expectThat(message.body.decodeToString()).isEqualTo(expected)
+    }
+
 //    @Test
 //    fun send() {
 //    }
