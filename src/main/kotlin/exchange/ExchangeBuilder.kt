@@ -21,7 +21,7 @@ import reactor.rabbitmq.ExchangeSpecification
 
 public data class ExchangeBuilder(
     val name: String,
-    var type: ExchangeType = ExchangeType.DIRECT,
+    val type: ExchangeType,
     var durable: Boolean = false,
     var autoDelete: Boolean = false,
     var internal: Boolean = false,

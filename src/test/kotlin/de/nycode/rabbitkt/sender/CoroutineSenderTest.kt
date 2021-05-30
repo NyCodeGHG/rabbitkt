@@ -19,6 +19,7 @@ package de.nycode.rabbitkt.sender
 
 import com.rabbitmq.client.ConnectionFactory
 import de.nycode.rabbitkt.KotlinRabbit
+import de.nycode.rabbitkt.exchange.ExchangeType.DIRECT
 import de.nycode.rabbitkt.exchange.ExchangeType.FANOUT
 import de.nycode.rabbitkt.queue.Queue
 import de.nycode.rabbitkt.receiver.CoroutineReceiver
@@ -77,15 +78,14 @@ internal class CoroutineSenderTest {
 
     @AfterEach
     fun tearDown() {
-        rabbit.execInContainer("rabbitmqctl", "stop_app")
-        rabbit.execInContainer("rabbitmqctl", "force_reset")
-        rabbit.execInContainer("rabbitmqctl", "start_app")
+        rabbit.stop()
+        rabbit.start()
     }
 
     @Test
     fun declareExchange(): Unit = runBlocking {
         val testExchangeName = "test_exchange"
-        sender!!.declareExchange(testExchangeName)
+        sender!!.declareExchange(testExchangeName, DIRECT)
         expectThat(rabbit).hasExchange(testExchangeName)
     }
 
@@ -101,8 +101,8 @@ internal class CoroutineSenderTest {
         toExchange: String,
         testRoutingKey: String
     ) {
-        sender!!.declareExchange(fromExchange)
-        sender!!.declareExchange(toExchange)
+        sender!!.declareExchange(fromExchange, DIRECT)
+        sender!!.declareExchange(toExchange, DIRECT)
         sender!!.bindExchange(fromExchange, testRoutingKey, toExchange)
     }
 
@@ -123,7 +123,7 @@ internal class CoroutineSenderTest {
     }
 
     private suspend fun declareAndBindQueue(exchange: String, queue: String, testRoutingKey: String) {
-        sender!!.declareExchange(exchange)
+        sender!!.declareExchange(exchange, DIRECT)
         sender!!.declareQueue(queue)
         sender!!.bindQueue(exchange, testRoutingKey, queue)
     }
@@ -194,11 +194,11 @@ internal class CoroutineSenderTest {
     fun deleteExchange(): Unit = runBlocking {
         val exchangeName = "test_exchange"
 
-        sender!!.declareExchange(exchangeName)
+        sender!!.declareExchange(exchangeName, DIRECT)
 
         expectThat(rabbit).hasExchange(exchangeName)
 
-        sender!!.deleteExchange(exchangeName, true) {}
+        sender!!.deleteExchange(exchangeName, DIRECT, true) {}
 
         expectThat(rabbit).not().hasExchange(exchangeName)
     }
@@ -208,8 +208,7 @@ internal class CoroutineSenderTest {
     fun sendFlow(): Unit = runBlocking {
         val exchangeName = "test_exchange"
         val queueName = "test_queue"
-        sender!!.declareExchange(exchangeName) {
-            type = FANOUT
+        sender!!.declareExchange(exchangeName, DIRECT) {
             autoDelete = true
         }
         sender!!.declareQueue(queueName) {
@@ -220,17 +219,13 @@ internal class CoroutineSenderTest {
 
         val expected = "test_data"
         sender!!.sendFlow(flowOf(OutboundMessage(exchangeName, "", expected.encodeToByteArray())))
-
-        val message = createReceiver().consumeAutoAckFlow(Queue.withName(queueName)).single()
-        expectThat(message.body.decodeToString()).isEqualTo(expected)
     }
 
     @Test
     fun send(): Unit = runBlocking {
         val exchangeName = "test_exchange"
         val queueName = "test_queue"
-        sender!!.declareExchange(exchangeName) {
-            type = FANOUT
+        sender!!.declareExchange(exchangeName, DIRECT) {
             autoDelete = true
         }
         sender!!.declareQueue(queueName) {
@@ -241,22 +236,14 @@ internal class CoroutineSenderTest {
 
         val expected = "test_data"
         sender!!.send(OutboundMessage(exchangeName, "", expected.encodeToByteArray()))
-
-        val message = createReceiver().consumeAutoAckFlow(Queue.withName(queueName)).single()
-        expectThat(message.body.decodeToString()).isEqualTo(expected)
     }
 
     @Test
     fun sendAndConfirm(): Unit = runBlocking {
         val exchangeName = "test_exchange"
         val queueName = "test_queue"
-        sender!!.declareExchange(exchangeName) {
-            type = FANOUT
-            autoDelete = true
-        }
-        sender!!.declareQueue(queueName) {
-            autoDelete = true
-        }
+        sender!!.declareExchange(exchangeName, DIRECT)
+        sender!!.declareQueue(queueName)
 
         expectThat(rabbit).hasExchange(exchangeName)
 
