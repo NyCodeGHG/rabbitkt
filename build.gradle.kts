@@ -31,8 +31,7 @@ subprojects {
         withType<Test> {
             useJUnitPlatform()
         }
-        dokkaHtml {
-            moduleName.set("RabbitKt")
+        dokkaHtml.configure {
             dokkaSourceSets {
                 configureEach {
                     jdkVersion.set(projectJvmTarget)
