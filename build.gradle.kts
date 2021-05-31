@@ -18,7 +18,6 @@ allprojects {
 val projectJvmTarget = 11
 
 subprojects {
-    apply(plugin = "org.jetbrains.dokka")
     group = rootProject.group
     version = rootProject.version
     tasks {
@@ -31,7 +30,7 @@ subprojects {
         withType<Test> {
             useJUnitPlatform()
         }
-        dokkaHtml.configure {
+        withType<org.jetbrains.dokka.gradle.DokkaTask>().configureEach {
             dokkaSourceSets {
                 configureEach {
                     jdkVersion.set(projectJvmTarget)
