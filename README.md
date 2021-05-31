@@ -24,7 +24,7 @@ repositories {
 }
 
 dependencies {
-    implementation("de.nycode:rabbitkt:1.0.0-SNAPSHOT")
+    implementation("de.nycode.rabbitkt:rabbitkt-core:1.0.0-SNAPSHOT")
 }
 ```
 
@@ -41,7 +41,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'de.nycode:rabbitkt:1.0.0-SNAPSHOT'
+    implementation 'de.nycode.rabbitkt:rabbitkt-core:1.0.0-SNAPSHOT'
 }
 ```
 
@@ -65,8 +65,8 @@ use maven, here's your snippet.
 ```xml
 <dependencies>
     <dependency>
-        <groupId>de.nycode</groupId>
-        <artifactId>rabbitkt</artifactId>
+        <groupId>de.nycode.rabbitkt</groupId>
+        <artifactId>rabbitkt-core</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </dependency>
 </dependencies>
