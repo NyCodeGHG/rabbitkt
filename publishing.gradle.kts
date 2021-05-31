@@ -18,9 +18,9 @@
 apply(plugin = "org.gradle.maven-publish")
 apply(plugin = "org.gradle.signing")
 
-val sonatypeUsername = System.getenv("SONATYPE_USER") ?: findProperty("sonatypeUsername")?.toString()
+val sonatypeUsername = (System.getenv("SONATYPE_USER") ?: findProperty("sonatypeUsername")?.toString())
 ?: error("No Sonatype username was found!")
-val sonatypePassword = System.getenv("SONATYPE_PASSWORD") ?: findProperty("sonatypePassword")?.toString()
+val sonatypePassword = (System.getenv("SONATYPE_PASSWORD") ?: findProperty("sonatypePassword")?.toString())
 ?: error("No Sonatype password was found!")
 
 val dokkaJar by tasks.registering(Jar::class) {
@@ -98,8 +98,8 @@ val configurePublishing: PublishingExtension.() -> Unit = {
 
 val configureSigning: SigningExtension.() -> Unit = {
     val signingKey =
-        System.getenv("SIGNING_KEY") ?: findProperty("signingKey")?.toString() ?: error("Unable to find signing key")
-    val signingPassword = System.getenv("SIGNING_PASSWORD") ?: findProperty("signingPassword")?.toString()
+        (System.getenv("SIGNING_KEY") ?: findProperty("signingKey")?.toString()) ?: error("Unable to find signing key")
+    val signingPassword = (System.getenv("SIGNING_PASSWORD") ?: findProperty("signingPassword")?.toString())
     ?: error("Unable to find signing password")
     if (signingKey != null && signingPassword != null) {
         useInMemoryPgpKeys(
