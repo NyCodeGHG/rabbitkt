@@ -15,12 +15,13 @@
  *
  */
 
-apply(plugin = "org.jetbrains.dokka")
 apply(plugin = "org.gradle.maven-publish")
 apply(plugin = "org.gradle.signing")
 
-val sonatypeUsername = System.getenv("SONATYPE_USER")
-val sonatypePassword = System.getenv("SONATYPE_PASSWORD")
+val sonatypeUsername = System.getenv("SONATYPE_USER") ?: findProperty("sonatypeUsername")?.toString()
+?: error("No Sonatype username was found!")
+val sonatypePassword = System.getenv("SONATYPE_PASSWORD") ?: findProperty("sonatypePassword")?.toString()
+?: error("No Sonatype password was found!")
 
 val dokkaJar by tasks.registering(Jar::class) {
     dependsOn("dokkaHtml")
@@ -49,10 +50,10 @@ val configurePublishing: PublishingExtension.() -> Unit = {
         if (branch != "main" && !isSnapshot) {
             return@publications
         }
-        create<MavenPublication>("maven") {
+        create<MavenPublication>(project.name.toString()) {
             from(components["kotlin"])
             groupId = project.group.toString()
-            artifactId = project.name.toString()
+            artifactId = "rabbitkt-${project.name.toString()}"
             val projectVersion = project.version.toString()
             if (projectVersion.endsWith("SNAPSHOT") && branch != "dev") {
                 version = "$branch-$projectVersion"
@@ -96,8 +97,10 @@ val configurePublishing: PublishingExtension.() -> Unit = {
 }
 
 val configureSigning: SigningExtension.() -> Unit = {
-    val signingKey = System.getenv("SIGNING_KEY")
-    val signingPassword = System.getenv("SIGNING_PASSWORD")
+    val signingKey =
+        System.getenv("SIGNING_KEY") ?: findProperty("signingKey")?.toString() ?: error("Unable to find signing key")
+    val signingPassword = System.getenv("SIGNING_PASSWORD") ?: findProperty("signingPassword")?.toString()
+    ?: error("Unable to find signing password")
     if (signingKey != null && signingPassword != null) {
         useInMemoryPgpKeys(
             String(java.util.Base64.getDecoder().decode(signingKey.toByteArray())),

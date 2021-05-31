@@ -140,7 +140,7 @@ jobs:
           key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}
 
       - name: Build Dokka Docs with Gradle
-        run: ./gradlew dokkaHtml
+        run: ./gradlew dokkaHtmlMultiModule
 
       - name: Deploy Docs to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@4.1.3
