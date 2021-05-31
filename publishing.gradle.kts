@@ -21,12 +21,6 @@ apply(plugin = "org.gradle.signing")
 val sonatypeUsername = System.getenv("SONATYPE_USER") ?: findProperty("sonatypeUsername")?.toString()
 val sonatypePassword = System.getenv("SONATYPE_PASSWORD") ?: findProperty("sonatypePassword")?.toString()
 
-val dokkaJar by tasks.registering(Jar::class) {
-    dependsOn("dokkaHtml")
-    archiveClassifier.set("javadoc")
-    from(tasks.getByName("dokkaHtml"))
-}
-
 val isSnapshot = version.toString().endsWith("SNAPSHOT")
 
 val configurePublishing: PublishingExtension.() -> Unit = {
@@ -48,45 +42,56 @@ val configurePublishing: PublishingExtension.() -> Unit = {
         if (branch != "main" && !isSnapshot) {
             return@publications
         }
-        create<MavenPublication>(project.name.toString()) {
-            from(components["kotlin"])
-            groupId = project.group.toString()
-            artifactId = "rabbitkt-${project.name.toString()}"
-            val projectVersion = project.version.toString()
-            if (projectVersion.endsWith("SNAPSHOT") && branch != "dev") {
-                version = "$branch-$projectVersion"
-            } else {
-                version = projectVersion
+        if (isEmpty() && project.plugins.hasPlugin("kotlin")) {
+            create<MavenPublication>(project.name.toString()) {
+                val dokkaJar by tasks.registering(Jar::class) {
+                    dependsOn("dokkaHtml")
+                    archiveClassifier.set("javadoc")
+                    from(tasks.getByName("dokkaHtml"))
+                }
+                from(components["kotlin"])
+                artifact(dokkaJar)
             }
-            artifact(dokkaJar)
-            pom {
-                name.set(project.name)
-                description.set(project.description)
-                url.set("https://github.com/NyCodeGHG/rabbitkt")
-
-                licenses {
-                    license {
-                        name.set("Apache-2.0 License")
-                        url.set("https://github.com/NyCodeGHG/rabbitkt/blob/main/LICENSE")
-                    }
+        }
+        filterIsInstance<MavenPublication>().forEach { publication ->
+            publication.apply {
+                groupId = project.group.toString()
+                artifactId = "rabbitkt-${project.name.toString()}"
+                val projectVersion = project.version.toString()
+                if (projectVersion.endsWith("SNAPSHOT") && branch != "dev") {
+                    version = "$branch-$projectVersion"
+                } else {
+                    version = projectVersion
                 }
-
-                issueManagement {
-                    system.set("GitHub")
-                    url.set("https://github.com/NyCodeGHG/rabbitkt/issues")
-                }
-
-                scm {
-                    connection.set("https://github.com/NyCodeGHG/rabbitkt.git")
+                pom {
+                    name.set(project.name)
+                    description.set(project.description)
                     url.set("https://github.com/NyCodeGHG/rabbitkt")
-                }
 
-                developers {
-                    developer {
-                        name.set("NyCode")
-                        email.set("nico@nycode.de")
-                        url.set("https://nycode.de")
-                        timezone.set("Europe/Berlin")
+                    licenses {
+                        license {
+                            name.set("Apache-2.0 License")
+                            url.set("https://github.com/NyCodeGHG/rabbitkt/blob/main/LICENSE")
+                        }
+                    }
+
+                    issueManagement {
+                        system.set("GitHub")
+                        url.set("https://github.com/NyCodeGHG/rabbitkt/issues")
+                    }
+
+                    scm {
+                        connection.set("https://github.com/NyCodeGHG/rabbitkt.git")
+                        url.set("https://github.com/NyCodeGHG/rabbitkt")
+                    }
+
+                    developers {
+                        developer {
+                            name.set("NyCode")
+                            email.set("nico@nycode.de")
+                            url.set("https://nycode.de")
+                            timezone.set("Europe/Berlin")
+                        }
                     }
                 }
             }

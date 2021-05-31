@@ -20,8 +20,6 @@ plugins {
     `maven-publish`
 }
 
-apply(from = "../publishing.gradle.kts")
-
 val me = project
 
 javaPlatform.allowDependencies()
@@ -56,3 +54,5 @@ publishing {
         }
     }
 }
+
+apply(from = "../publishing.gradle.kts")

@@ -19,6 +19,7 @@ plugins {
     kotlin("jvm")
     kotlin("plugin.serialization")
     dokka
+    `maven-publish`
 }
 
 apply(from = "../publishing.gradle.kts")
