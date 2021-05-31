@@ -73,6 +73,11 @@ jobs:
 
       - name: Run Tests
         run: ./gradlew check
+        env:
+          SONATYPE_USER: ${{ secrets.SONATYPE_USER }}
+          SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
+          SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
+          SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
   publish-snapshot:
     runs-on: ubuntu-latest
     name: Publish Snapshot
