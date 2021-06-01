@@ -20,7 +20,7 @@ package de.nycode.rabbitkt.exchange
 import de.nycode.rabbitkt.binding.ExchangeBinding
 import de.nycode.rabbitkt.binding.QueueBinding
 import de.nycode.rabbitkt.queue.Queue
-import de.nycode.rabbitkt.sender.CoroutineSender
+import de.nycode.rabbitkt.sender.CoroutineSenderImpl
 
 /**
  * Represents an exchange in a RabbitMQ Broker.
@@ -28,7 +28,7 @@ import de.nycode.rabbitkt.sender.CoroutineSender
 public data class Exchange internal constructor(
     public val name: String,
     public val type: ExchangeType,
-    private val sender: CoroutineSender
+    private val sender: CoroutineSenderImpl
 ) {
     /**
      * Bind this exchange to another exchange.

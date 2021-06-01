@@ -17,8 +17,8 @@
 
 package de.nycode.rabbitkt.queue
 
-import de.nycode.rabbitkt.sender.CoroutineSender
+import de.nycode.rabbitkt.sender.CoroutineSenderImpl
 
-public class Queue internal constructor(public val name: String, private val sender: CoroutineSender) {
+public class Queue internal constructor(public val name: String, private val sender: CoroutineSenderImpl) {
 
 }

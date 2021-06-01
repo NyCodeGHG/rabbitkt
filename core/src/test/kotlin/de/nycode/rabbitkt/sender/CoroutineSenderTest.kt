@@ -41,7 +41,7 @@ import strikt.assertions.*
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 internal class CoroutineSenderTest {
 
-    private var sender: CoroutineSender? = null
+    private var sender: CoroutineSenderImpl? = null
 
     companion object {
         @Container

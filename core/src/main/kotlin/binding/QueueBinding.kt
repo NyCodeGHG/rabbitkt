@@ -19,7 +19,6 @@ package de.nycode.rabbitkt.binding
 
 import de.nycode.rabbitkt.exchange.Exchange
 import de.nycode.rabbitkt.queue.Queue
-import de.nycode.rabbitkt.sender.CoroutineSender
 
 public data class QueueBinding internal constructor(
     val source: Exchange,
