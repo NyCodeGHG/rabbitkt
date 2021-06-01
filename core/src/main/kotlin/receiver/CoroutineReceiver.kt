@@ -18,7 +18,6 @@
 package de.nycode.rabbitkt.receiver
 
 import com.rabbitmq.client.Delivery
-import de.nycode.rabbitkt.queue.Queue
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.reactive.asFlow
@@ -42,8 +41,8 @@ public value class CoroutineReceiver(private val receiver: Receiver) : Closeable
      * @param queue the targeted queue.
      * @return A [Flow] of deliveries.
      */
-    public fun consumeAutoAckFlow(queue: Queue): Flow<Delivery> {
-        return receiver.consumeAutoAck(queue.name).asFlow()
+    public fun consumeAutoAckFlow(queue: String): Flow<Delivery> {
+        return receiver.consumeAutoAck(queue).asFlow()
     }
 
     /**
@@ -52,8 +51,8 @@ public value class CoroutineReceiver(private val receiver: Receiver) : Closeable
      * @param queue the targeted queue.
      * @param handler the handler which gets called for every message.
      */
-    public suspend fun consumeAutoAck(queue: Queue, handler: suspend (Delivery) -> Unit) {
-        receiver.consumeAutoAck(queue.name).asFlow().collect(handler)
+    public suspend fun consumeAutoAck(queue: String, handler: suspend (Delivery) -> Unit) {
+        receiver.consumeAutoAck(queue).asFlow().collect(handler)
     }
 
     /**
@@ -63,8 +62,8 @@ public value class CoroutineReceiver(private val receiver: Receiver) : Closeable
      * @param queue the targeted queue.
      * @return A [Flow] of deliveries which must be acknowledged or rejected.
      */
-    public fun consume(queue: Queue): Flow<AcknowledgableDelivery> =
-        receiver.consumeManualAck(queue.name)
+    public fun consume(queue: String): Flow<AcknowledgableDelivery> =
+        receiver.consumeManualAck(queue)
             .asFlow()
 
     /**
@@ -74,8 +73,8 @@ public value class CoroutineReceiver(private val receiver: Receiver) : Closeable
      * @param queue the targeted queue.
      * @param handler the handler which gets called for every message.
      */
-    public suspend fun consume(queue: Queue, handler: suspend AcknowledgeHandler.() -> Unit): Unit =
-        receiver.consumeManualAck(queue.name)
+    public suspend fun consume(queue: String, handler: suspend AcknowledgeHandler.() -> Unit): Unit =
+        receiver.consumeManualAck(queue)
             .asFlow()
             .collect {
                 handler(AcknowledgeHandler(it))
