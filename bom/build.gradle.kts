@@ -14,10 +14,12 @@
  *    limitations under the License.
  *
  */
+import de.nycode.rabbitkt.gradle.*
 
 plugins {
     `java-platform`
     `maven-publish`
+    signing
 }
 
 val me = project
@@ -47,12 +49,17 @@ dependencies {
     }
 }
 
+val branch = getGitBranch()
+
 publishing {
     publications {
         create<MavenPublication>("maven") {
             from(components.getByName("javaPlatform"))
+            configureVersion(project, branch)
+            pom {
+                configureMavenCentralMetadata(project)
+            }
+            signPublicationIfKeyPresent(project)
         }
     }
 }
-
-apply(from = "../publishing.gradle.kts")

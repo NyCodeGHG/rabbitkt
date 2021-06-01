@@ -2,8 +2,6 @@ plugins {
     kotlin("jvm") version "1.5.10" apply false
     kotlin("plugin.serialization") version "1.5.10" apply false
     dokka version "1.4.32"
-    signing
-    `maven-publish`
 }
 
 group = "de.nycode.rabbitkt"
