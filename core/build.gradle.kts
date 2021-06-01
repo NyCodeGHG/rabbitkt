@@ -27,31 +27,25 @@ kotlin {
 }
 
 dependencies {
-    implementation("io.projectreactor.rabbitmq", "reactor-rabbitmq", "1.5.2")
+    implementation("io.projectreactor.rabbitmq", "reactor-rabbitmq", Versions.`reactor-rabbitmq`)
 
-    implementation("org.slf4j", "slf4j-api", "1.7.30")
-    implementation("org.jetbrains.kotlinx", "kotlinx-coroutines-core", "1.5.0")
-    implementation("org.jetbrains.kotlinx", "kotlinx-coroutines-reactor", "1.5.0")
-
-    implementation("org.jetbrains.kotlinx", "kotlinx-serialization-core", "1.2.1")
+    implementation("org.slf4j", "slf4j-api", Versions.`slf4j-api`)
+    implementation("org.jetbrains.kotlinx", "kotlinx-coroutines-core", Versions.`kotlinx-coroutines`)
+    implementation("org.jetbrains.kotlinx", "kotlinx-coroutines-reactor", Versions.`kotlinx-coroutines`)
+    implementation("org.jetbrains.kotlinx", "kotlinx-serialization-core", Versions.`kotlinx-serialization`)
 
     // Test Dependencies
-    testImplementation("org.junit.jupiter", "junit-jupiter-api", "5.7.2")
-    testImplementation("org.junit.jupiter", "junit-jupiter-params", "5.7.2")
-    testRuntimeOnly("org.junit.jupiter", "junit-jupiter-engine", "5.7.2")
-
-    testImplementation("io.strikt", "strikt-core", "0.31.0")
-
-    testImplementation(kotlin("test-junit5"))
-    testImplementation("org.jetbrains.kotlinx", "kotlinx-coroutines-test", "1.5.0")
-
-    testImplementation(platform("org.testcontainers:testcontainers-bom:1.15.3"))
+    testImplementation("org.junit.jupiter", "junit-jupiter-api", Versions.`junit-jupter`)
+    testImplementation("org.junit.jupiter", "junit-jupiter-params", Versions.`junit-jupter`)
+    testImplementation("io.strikt", "strikt-core", Versions.`strikt-core`)
+    testImplementation("org.jetbrains.kotlinx", "kotlinx-coroutines-test", Versions.`kotlinx-coroutines`)
+    testImplementation(platform("org.testcontainers:testcontainers-bom:${Versions.testcontainers}"))
     testImplementation("org.testcontainers", "testcontainers")
     testImplementation("org.testcontainers", "junit-jupiter")
     testImplementation("org.testcontainers", "rabbitmq")
+    testImplementation("org.jetbrains.kotlinx", "kotlinx-serialization-json", Versions.`kotlinx-serialization`)
 
-    testImplementation("org.jetbrains.kotlinx", "kotlinx-serialization-json", "1.2.1")
-
+    testRuntimeOnly("org.junit.jupiter", "junit-jupiter-engine", Versions.`junit-jupter`)
     testRuntimeOnly("ch.qos.logback", "logback-classic", "1.2.3")
 }
 
