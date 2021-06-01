@@ -15,10 +15,8 @@
  *
  */
 
-package de.nycode.rabbitkt.queue
+package de.nycode.rabbitkt.binding
 
-import de.nycode.rabbitkt.sender.CoroutineSender
-
-public class Queue internal constructor(public val name: String, private val sender: CoroutineSender) {
-
+public sealed interface Binding {
+    public suspend fun unbind()
 }

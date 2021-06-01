@@ -15,10 +15,21 @@
  *
  */
 
-package de.nycode.rabbitkt.queue
+package de.nycode.rabbitkt.binding
 
+import de.nycode.rabbitkt.exchange.Exchange
 import de.nycode.rabbitkt.sender.CoroutineSender
 
-public class Queue internal constructor(public val name: String, private val sender: CoroutineSender) {
-
+/**
+ * Represents a binding between two exchanges.
+ */
+public data class ExchangeBinding internal constructor(
+    val source: Exchange,
+    val destination: Exchange,
+    val routingKey: String,
+    private val sender: CoroutineSender
+) : Binding {
+    public override suspend fun unbind() {
+        sender.unbindExchange(source.name, routingKey, destination.name)
+    }
 }

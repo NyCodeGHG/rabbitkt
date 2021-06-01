@@ -18,8 +18,10 @@
 package de.nycode.rabbitkt.sender
 
 import com.rabbitmq.client.AMQP
+import de.nycode.rabbitkt.exchange.Exchange
 import de.nycode.rabbitkt.exchange.ExchangeBuilder
 import de.nycode.rabbitkt.exchange.ExchangeType
+import de.nycode.rabbitkt.queue.Queue
 import de.nycode.rabbitkt.queue.QueueBuilder
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
@@ -70,11 +72,12 @@ public value class CoroutineSender(private val sender: Sender) : Closeable {
         name: String,
         type: ExchangeType,
         builder: ExchangeBuilder.() -> Unit = {}
-    ): AMQP.Exchange.DeclareOk {
+    ): Exchange {
         contract {
             callsInPlace(builder, InvocationKind.EXACTLY_ONCE)
         }
-        return declareExchangeReactive(name, type, builder).awaitSingle()
+        declareExchangeReactive(name, type, builder).awaitSingle()
+        return Exchange(name, type, this)
     }
 
     private fun declareQueueReactive(
@@ -94,11 +97,12 @@ public value class CoroutineSender(private val sender: Sender) : Closeable {
      * @param builder the configuration builder
      * @return The RabbitMQ DeclareOk Result
      */
-    public suspend fun declareQueue(name: String, builder: QueueBuilder.() -> Unit = {}): AMQP.Queue.DeclareOk {
+    public suspend fun declareQueue(name: String, builder: QueueBuilder.() -> Unit = {}): Queue {
         contract {
             callsInPlace(builder, InvocationKind.EXACTLY_ONCE)
         }
-        return declareQueueReactive(name, builder).awaitSingle()
+        val result = declareQueueReactive(name, builder).awaitSingle()
+        return Queue(result.queue, this)
     }
 
     private fun bindExchangeReactive(
@@ -191,14 +195,9 @@ public value class CoroutineSender(private val sender: Sender) : Closeable {
     private fun deleteExchangeReactive(
         name: String,
         type: ExchangeType,
-        ifUnused: Boolean = false,
-        builder: ExchangeBuilder.() -> Unit = {}
-    ): Mono<AMQP.Exchange.DeleteOk> {
-        contract {
-            callsInPlace(builder, InvocationKind.EXACTLY_ONCE)
-        }
-        return sender.deleteExchange(ExchangeBuilder(name, type).apply(builder).toExchangeSpecification(), ifUnused)
-    }
+        ifUnused: Boolean = false
+    ): Mono<AMQP.Exchange.DeleteOk> =
+        sender.deleteExchange(ExchangeBuilder(name, type).toExchangeSpecification(), ifUnused)
 
     /**
      * Delete an exchange.
@@ -207,14 +206,8 @@ public value class CoroutineSender(private val sender: Sender) : Closeable {
     public suspend fun deleteExchange(
         name: String,
         type: ExchangeType,
-        ifUnused: Boolean,
-        builder: ExchangeBuilder.() -> Unit
-    ): AMQP.Exchange.DeleteOk {
-        contract {
-            callsInPlace(builder, InvocationKind.EXACTLY_ONCE)
-        }
-        return deleteExchangeReactive(name, type, ifUnused, builder).awaitSingle()
-    }
+        ifUnused: Boolean
+    ): AMQP.Exchange.DeleteOk = deleteExchangeReactive(name, type, ifUnused).awaitSingle()
 
     private fun sendReactive(messages: Publisher<OutboundMessage>) =
         sender.send(messages)
