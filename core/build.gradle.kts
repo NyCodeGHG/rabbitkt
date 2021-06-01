@@ -19,9 +19,8 @@ plugins {
     kotlin("jvm")
     kotlin("plugin.serialization")
     dokka
+    `maven-publish`
 }
-
-apply(from = "../publishing.gradle.kts")
 
 kotlin {
     explicitApi()
@@ -55,3 +54,5 @@ dependencies {
 
     testRuntimeOnly("ch.qos.logback", "logback-classic", "1.2.3")
 }
+
+apply(from = rootProject.file("publishing.gradle.kts"))

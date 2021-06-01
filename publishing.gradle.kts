@@ -14,20 +14,22 @@
  *    limitations under the License.
  *
  */
+import de.nycode.rabbitkt.gradle.*
 
+apply(plugin = "org.jetbrains.dokka")
 apply(plugin = "org.gradle.maven-publish")
 apply(plugin = "org.gradle.signing")
 
 val sonatypeUsername = System.getenv("SONATYPE_USER") ?: findProperty("sonatypeUsername")?.toString()
 val sonatypePassword = System.getenv("SONATYPE_PASSWORD") ?: findProperty("sonatypePassword")?.toString()
 
+val isSnapshot = version.toString().endsWith("SNAPSHOT")
+
 val dokkaJar by tasks.registering(Jar::class) {
     dependsOn("dokkaHtml")
     archiveClassifier.set("javadoc")
     from(tasks.getByName("dokkaHtml"))
 }
-
-val isSnapshot = version.toString().endsWith("SNAPSHOT")
 
 val configurePublishing: PublishingExtension.() -> Unit = {
     repositories {
@@ -49,68 +51,19 @@ val configurePublishing: PublishingExtension.() -> Unit = {
             return@publications
         }
         create<MavenPublication>(project.name.toString()) {
-            from(components["kotlin"])
+            println("Creating Publication for ${project.name}")
+            from(project.components["kotlin"])
             groupId = project.group.toString()
-            artifactId = "rabbitkt-${project.name.toString()}"
-            val projectVersion = project.version.toString()
-            if (projectVersion.endsWith("SNAPSHOT") && branch != "dev") {
-                version = "$branch-$projectVersion"
-            } else {
-                version = projectVersion
-            }
             artifact(dokkaJar)
+            configureVersion(project, branch)
             pom {
-                name.set(project.name)
-                description.set(project.description)
-                url.set("https://github.com/NyCodeGHG/rabbitkt")
-
-                licenses {
-                    license {
-                        name.set("Apache-2.0 License")
-                        url.set("https://github.com/NyCodeGHG/rabbitkt/blob/main/LICENSE")
-                    }
-                }
-
-                issueManagement {
-                    system.set("GitHub")
-                    url.set("https://github.com/NyCodeGHG/rabbitkt/issues")
-                }
-
-                scm {
-                    connection.set("https://github.com/NyCodeGHG/rabbitkt.git")
-                    url.set("https://github.com/NyCodeGHG/rabbitkt")
-                }
-
-                developers {
-                    developer {
-                        name.set("NyCode")
-                        email.set("nico@nycode.de")
-                        url.set("https://nycode.de")
-                        timezone.set("Europe/Berlin")
-                    }
-                }
+                configureMavenCentralMetadata(project)
             }
+            signPublicationIfKeyPresent(project)
         }
     }
 }
 
-val configureSigning: SigningExtension.() -> Unit = {
-    val signingKey =
-        System.getenv("SIGNING_KEY") ?: findProperty("signingKey")?.toString()
-    val signingPassword = System.getenv("SIGNING_PASSWORD") ?: findProperty("signingPassword")?.toString()
-    if (signingKey != null && signingPassword != null) {
-        useInMemoryPgpKeys(
-            String(java.util.Base64.getDecoder().decode(signingKey.toByteArray())),
-            signingPassword
-        )
-    }
-
-    publishing.publications.withType<MavenPublication> {
-        sign(this)
-    }
-}
-
-extensions.configure("signing", configureSigning)
 extensions.configure("publishing", configurePublishing)
 
 val Project.publishing: PublishingExtension
