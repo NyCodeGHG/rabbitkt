@@ -27,5 +27,9 @@ kotlin {
 }
 
 dependencies {
+    implementation(project(":core"))
     implementation(project(":serialization"))
+    api(project(":serialization-kotlinx-core"))
+
+    implementation("org.jetbrains.kotlinx", "kotlinx-serialization-protobuf", Versions.`kotlinx-serialization`)
 }

@@ -14,6 +14,7 @@
  *    limitations under the License.
  *
  */
+package de.nycode.rabbitkt.serialization.kotlinx.core
 
 import de.nycode.rabbitkt.annotations.KotlinRabbitInternals
 import kotlinx.serialization.*

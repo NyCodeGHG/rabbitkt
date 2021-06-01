@@ -29,7 +29,7 @@ kotlin {
 dependencies {
     implementation(project(":core"))
     implementation(project(":serialization"))
-    implementation(project(":serialization-kotlinx-core"))
+    api(project(":serialization-kotlinx-core"))
     implementation("org.jetbrains.kotlinx", "kotlinx-serialization-json", Versions.`kotlinx-serialization`)
 
     testImplementation("org.junit.jupiter", "junit-jupiter-api", Versions.`junit-jupter`)

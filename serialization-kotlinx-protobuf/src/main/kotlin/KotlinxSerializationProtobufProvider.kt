@@ -14,24 +14,24 @@
  *    limitations under the License.
  *
  */
-package de.nycode.rabbitkt.serialization.kotlinx.json
 
 import de.nycode.rabbitkt.annotations.KotlinRabbitInternals
 import de.nycode.rabbitkt.serialization.SerializationProvider
 import de.nycode.rabbitkt.serialization.kotlinx.core.KotlinRabbitSerializationRepository
-import kotlinx.serialization.json.Json
+import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.protobuf.ProtoBuf
 import kotlin.reflect.KClass
 
-@OptIn(KotlinRabbitInternals::class)
-public class KotlinxSerializationJsonProvider(private val json: Json) : SerializationProvider {
+@OptIn(KotlinRabbitInternals::class, ExperimentalSerializationApi::class)
+public class KotlinxSerializationProtobufProvider(private val protobuf: ProtoBuf) : SerializationProvider {
 
     override fun <T : Any> serialize(value: T, type: KClass<T>): ByteArray {
         val serializer = KotlinRabbitSerializationRepository.getSerializer(type)
-        return json.encodeToString(serializer, value).encodeToByteArray()
+        return protobuf.encodeToByteArray(serializer, value)
     }
 
     override fun <T : Any> deserialize(body: ByteArray, type: KClass<T>): T {
         val serializer = KotlinRabbitSerializationRepository.getSerializer(type)
-        return json.decodeFromString(serializer, body.decodeToString())
+        return protobuf.decodeFromByteArray(serializer, body)
     }
 }
