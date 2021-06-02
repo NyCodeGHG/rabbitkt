@@ -17,19 +17,17 @@
 
 package de.nycode.rabbitkt.serialization
 
-import de.nycode.rabbitkt.KotlinRabbitClient
-import de.nycode.rabbitkt.annotations.KotlinRabbitInternals
 import de.nycode.rabbitkt.exchange.Exchange
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import reactor.rabbitmq.OutboundMessage
 
 public suspend inline fun <reified T : Any> Exchange.send(message: T, routingKey: String = "") {
-    val provider = client.serializationProvider
-    val serializedMessage = provider.serialize(message)
+    val serializedMessage = client.serializationProvider.serialize(message)
     send(OutboundMessage(name, routingKey, serializedMessage))
 }
 
-@KotlinRabbitInternals
-@PublishedApi
-internal val KotlinRabbitClient.serializationProvider: SerializationProvider
-    get() =
-        requireNotNull(getSerializationPlugin().provider) { "There is no serialization provider installed!" }
+public suspend inline fun <reified T : Any> Exchange.send(messageFlow: Flow<T>, routingKey: String) {
+    val provider = client.serializationProvider
+    send(messageFlow.map(provider::serialize).map { OutboundMessage(name, routingKey, it) })
+}

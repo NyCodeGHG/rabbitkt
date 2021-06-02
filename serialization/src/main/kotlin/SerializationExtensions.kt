@@ -26,3 +26,9 @@ public fun KotlinRabbitClient.getSerializationPlugin(): SerializationPlugin {
     requireNotNull(plugin) { "Serialization must be installed when using Serialization extensions." }
     return plugin
 }
+
+@KotlinRabbitInternals
+@PublishedApi
+internal val KotlinRabbitClient.serializationProvider: SerializationProvider
+    get() =
+        requireNotNull(getSerializationPlugin().provider) { "There is no serialization provider installed!" }

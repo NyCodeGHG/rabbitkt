@@ -14,7 +14,9 @@
  *    limitations under the License.
  *
  */
-import de.nycode.rabbitkt.gradle.*
+import de.nycode.rabbitkt.gradle.configureMavenCentralMetadata
+import de.nycode.rabbitkt.gradle.configureVersion
+import de.nycode.rabbitkt.gradle.signPublicationIfKeyPresent
 
 plugins {
     `java-platform`

@@ -29,4 +29,6 @@ kotlin {
 dependencies {
     implementation(project(":core"))
     implementation("io.projectreactor.rabbitmq", "reactor-rabbitmq", Versions.`reactor-rabbitmq`)
+    implementation("org.jetbrains.kotlinx", "kotlinx-coroutines-core", Versions.`kotlinx-coroutines`)
+    implementation("org.jetbrains.kotlinx", "kotlinx-coroutines-reactor", Versions.`kotlinx-coroutines`)
 }
