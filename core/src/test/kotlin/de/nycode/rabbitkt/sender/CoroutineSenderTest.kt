@@ -18,7 +18,7 @@
 package de.nycode.rabbitkt.sender
 
 import com.rabbitmq.client.ConnectionFactory
-import de.nycode.rabbitkt.KotlinRabbit
+import de.nycode.rabbitkt.createRabbitClient
 import de.nycode.rabbitkt.exchange.ExchangeType.DIRECT
 import de.nycode.rabbitkt.sender.BindingKind.EXCHANGE
 import de.nycode.rabbitkt.sender.BindingKind.QUEUE
@@ -51,14 +51,14 @@ internal class CoroutineSenderTest {
 
     @BeforeEach
     fun setup() {
-        sender = KotlinRabbit.createSender {
+        sender = createRabbitClient().createSender {
             connectionFactory(ConnectionFactory().apply {
                 host = rabbit.host
                 port = rabbit.amqpPort
                 username = rabbit.adminUsername
                 password = rabbit.adminPassword
             })
-        }.coroutine
+        } as CoroutineSenderImpl
     }
 
     @AfterEach

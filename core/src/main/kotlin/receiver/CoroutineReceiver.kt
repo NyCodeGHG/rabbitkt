@@ -18,6 +18,7 @@
 package de.nycode.rabbitkt.receiver
 
 import com.rabbitmq.client.Delivery
+import de.nycode.rabbitkt.KotlinRabbitClient
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.reactive.asFlow
@@ -25,11 +26,7 @@ import reactor.rabbitmq.AcknowledgableDelivery
 import reactor.rabbitmq.Receiver
 import java.io.Closeable
 
-public inline val Receiver.coroutine: CoroutineReceiver
-    get() = CoroutineReceiver(this)
-
-@JvmInline
-public value class CoroutineReceiver(private val receiver: Receiver) : Closeable {
+public class CoroutineReceiver(private val client: KotlinRabbitClient, private val receiver: Receiver) : Closeable {
     /**
      * Closes the underlying [Receiver].
      */

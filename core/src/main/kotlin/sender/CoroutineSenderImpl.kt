@@ -18,6 +18,7 @@
 package de.nycode.rabbitkt.sender
 
 import com.rabbitmq.client.AMQP
+import de.nycode.rabbitkt.KotlinRabbitClient
 import de.nycode.rabbitkt.exchange.Exchange
 import de.nycode.rabbitkt.exchange.ExchangeBuilder
 import de.nycode.rabbitkt.exchange.ExchangeType
@@ -42,12 +43,8 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
-public inline val Sender.coroutine: CoroutineSenderImpl
-    get() = CoroutineSenderImpl(this)
-
 @OptIn(ExperimentalContracts::class)
-@JvmInline
-public value class CoroutineSenderImpl(private val sender: Sender) : CoroutineSender {
+public class CoroutineSenderImpl(private val client: KotlinRabbitClient, private val sender: Sender) : CoroutineSender {
 
     private fun declareExchangeReactive(
         name: String,
@@ -73,7 +70,7 @@ public value class CoroutineSenderImpl(private val sender: Sender) : CoroutineSe
         builder: ExchangeBuilder.() -> Unit
     ): Exchange {
         declareExchangeReactive(name, type, builder).awaitSingle()
-        return Exchange(name, type, this)
+        return Exchange(name, type, this, client)
     }
 
     private fun declareQueueReactive(

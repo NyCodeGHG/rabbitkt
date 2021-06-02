@@ -21,6 +21,10 @@ import de.nycode.rabbitkt.annotations.KotlinRabbitInternals
 import de.nycode.rabbitkt.plugin.Plugin
 import de.nycode.rabbitkt.plugin.PluginConfiguration
 import de.nycode.rabbitkt.plugin.PluginHolder
+import de.nycode.rabbitkt.receiver.CoroutineReceiver
+import de.nycode.rabbitkt.sender.CoroutineSender
+import de.nycode.rabbitkt.sender.CoroutineSenderImpl
+import reactor.rabbitmq.*
 import java.io.Closeable
 
 public class KotlinRabbitClient internal constructor(configuration: KotlinRabbitClientConfiguration) : Closeable {
@@ -36,9 +40,29 @@ public class KotlinRabbitClient internal constructor(configuration: KotlinRabbit
     public inline fun <reified T : Plugin<*>> getPlugin(): T? {
         return plugins.values.filterIsInstance<T>().firstOrNull()
     }
+
+    /**
+     * Create a new [Sender] and configure it with the [builder].
+     * @param builder The Configuration Block
+     * @return The newly created sender
+     */
+    public fun createSender(builder: SenderOptions.() -> Unit = {}): CoroutineSender {
+        val senderOptions = SenderOptions().apply(builder)
+        return CoroutineSenderImpl(this, RabbitFlux.createSender(senderOptions))
+    }
+
+    /**
+     * Create a new [Receiver] and configure it with the [builder].
+     * @param builder The Configuration Block
+     * @return The newly created receiver
+     */
+    public fun createReceiver(builder: ReceiverOptions.() -> Unit = {}): CoroutineReceiver {
+        val receiverOptions = ReceiverOptions().apply(builder)
+        return CoroutineReceiver(this, RabbitFlux.createReceiver(receiverOptions))
+    }
 }
 
-public class KotlinRabbitClientConfiguration {
+public class KotlinRabbitClientConfiguration internal constructor() {
 
     @KotlinRabbitInternals
     @PublishedApi
@@ -60,7 +84,12 @@ public class KotlinRabbitClientConfiguration {
     }
 }
 
-public fun createRabbitClient(builder: KotlinRabbitClientConfiguration.() -> Unit): KotlinRabbitClient {
+/**
+ * Creates a new [KotlinRabbitClient].
+ * @param builder configuration builder
+ * @return a new [KotlinRabbitClient]
+ */
+public fun createRabbitClient(builder: KotlinRabbitClientConfiguration.() -> Unit = {}): KotlinRabbitClient {
     val configuration = KotlinRabbitClientConfiguration().apply(builder)
     val client = KotlinRabbitClient(configuration)
     client.plugins.values.forEach(Plugin<*>::initialization)
