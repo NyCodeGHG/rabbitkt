@@ -16,10 +16,11 @@
  */
 package de.nycode.rabbitkt.serialization.kotlinx.json
 
-import de.nycode.rabbitkt.annotations.KotlinRabbitInternals
+import de.nycode.rabbitkt.serialization.SerializationPluginConfiguration
 import de.nycode.rabbitkt.serialization.SerializationProvider
 import de.nycode.rabbitkt.serialization.kotlinx.core.KotlinRabbitSerializationRepository
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonBuilder
 import kotlin.reflect.KClass
 
 public class KotlinxSerializationJsonProvider(private val json: Json) : SerializationProvider {
@@ -33,4 +34,9 @@ public class KotlinxSerializationJsonProvider(private val json: Json) : Serializ
         val serializer = KotlinRabbitSerializationRepository.getSerializer(type)
         return json.decodeFromString(serializer, body.decodeToString())
     }
+}
+
+public fun SerializationPluginConfiguration.json(builder: JsonBuilder.() -> Unit = {}) {
+    val json = Json(builderAction = builder)
+    provider = KotlinxSerializationJsonProvider(json)
 }

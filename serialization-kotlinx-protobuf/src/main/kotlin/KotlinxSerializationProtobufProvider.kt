@@ -14,14 +14,18 @@
  *    limitations under the License.
  *
  */
+@file:OptIn(ExperimentalSerializationApi::class)
 
+package de.nycode.rabbitkt.serialization.kotlinx.protobuf
+
+import de.nycode.rabbitkt.serialization.SerializationPluginConfiguration
 import de.nycode.rabbitkt.serialization.SerializationProvider
 import de.nycode.rabbitkt.serialization.kotlinx.core.KotlinRabbitSerializationRepository
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.protobuf.ProtoBuf
+import kotlinx.serialization.protobuf.ProtoBufBuilder
 import kotlin.reflect.KClass
 
-@OptIn(ExperimentalSerializationApi::class)
 public class KotlinxSerializationProtobufProvider(private val protobuf: ProtoBuf) : SerializationProvider {
 
     override fun <T : Any> serialize(value: T, type: KClass<T>): ByteArray {
@@ -29,8 +33,14 @@ public class KotlinxSerializationProtobufProvider(private val protobuf: ProtoBuf
         return protobuf.encodeToByteArray(serializer, value)
     }
 
+    @OptIn(ExperimentalSerializationApi::class)
     override fun <T : Any> deserialize(body: ByteArray, type: KClass<T>): T {
         val serializer = KotlinRabbitSerializationRepository.getSerializer(type)
         return protobuf.decodeFromByteArray(serializer, body)
     }
+}
+
+public fun SerializationPluginConfiguration.protobuf(builder: ProtoBufBuilder.() -> Unit = {}) {
+    val protobuf = ProtoBuf(builderAction = builder)
+    provider = KotlinxSerializationProtobufProvider(protobuf)
 }
