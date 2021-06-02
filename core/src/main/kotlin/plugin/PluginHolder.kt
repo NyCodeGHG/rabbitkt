@@ -15,13 +15,21 @@
  *
  */
 
-package de.nycode.rabbitkt.annotations
+package de.nycode.rabbitkt.plugin
 
-/**
- * Marks internal APIs which are only supposed to be used by rabbitkt internally.
- */
-@MustBeDocumented
-@Retention(AnnotationRetention.BINARY)
-@RequiresOptIn("This API is not intended be used publicly.", RequiresOptIn.Level.WARNING)
-@Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY)
-public annotation class KotlinRabbitInternals
+import de.nycode.rabbitkt.annotations.KotlinRabbitInternals
+
+public abstract class PluginHolder<C : PluginConfiguration, P : Plugin<C>>(name: String? = null) {
+
+    private val optionalName: String? = name
+
+    public val name: String
+        get() =
+            optionalName ?: this::class.qualifiedName ?: "Unable to find plugin class"
+
+    @KotlinRabbitInternals
+    public abstract fun createInstance(configuration: C): P
+
+    @KotlinRabbitInternals
+    public abstract fun createDefaultConfiguration(): C
+}

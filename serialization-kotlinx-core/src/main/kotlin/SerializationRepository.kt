@@ -48,7 +48,6 @@ public inline fun <reified T> registerSerializer(serializer: KSerializer<T>) {
     customSerializers[T::class] = serializer
 }
 
-@OptIn(KotlinRabbitInternals::class)
 public val rabbitktSerializationModule: SerializersModule
     get() = KotlinRabbitSerializationRepository.module
 

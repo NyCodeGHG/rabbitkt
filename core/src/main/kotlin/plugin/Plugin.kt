@@ -15,13 +15,9 @@
  *
  */
 
-package de.nycode.rabbitkt.annotations
+package de.nycode.rabbitkt.plugin
 
-/**
- * Marks internal APIs which are only supposed to be used by rabbitkt internally.
- */
-@MustBeDocumented
-@Retention(AnnotationRetention.BINARY)
-@RequiresOptIn("This API is not intended be used publicly.", RequiresOptIn.Level.WARNING)
-@Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY)
-public annotation class KotlinRabbitInternals
+public abstract class Plugin<C>(protected val configuration: C, public val name: String? = null) {
+    public abstract fun initialization()
+    public abstract fun shutdown()
+}

@@ -15,13 +15,15 @@
  *
  */
 
-package de.nycode.rabbitkt.annotations
+package de.nycode.rabbitkt.plugin
 
 /**
- * Marks internal APIs which are only supposed to be used by rabbitkt internally.
+ * Interface used for marking configuration classes of [Plugin]s.
  */
-@MustBeDocumented
-@Retention(AnnotationRetention.BINARY)
-@RequiresOptIn("This API is not intended be used publicly.", RequiresOptIn.Level.WARNING)
-@Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY)
-public annotation class KotlinRabbitInternals
+public interface PluginConfiguration {
+    /**
+     * Used for validating the configuration
+     * @return true when the configuration is valid. false when it's invalid
+     */
+    public val isValid: Boolean
+}

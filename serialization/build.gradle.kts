@@ -28,4 +28,5 @@ kotlin {
 
 dependencies {
     implementation(project(":core"))
+    implementation("io.projectreactor.rabbitmq", "reactor-rabbitmq", Versions.`reactor-rabbitmq`)
 }

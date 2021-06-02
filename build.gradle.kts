@@ -22,7 +22,7 @@ subprojects {
         withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
             kotlinOptions {
                 jvmTarget = if (projectJvmTarget <= 8) "1.$projectJvmTarget" else projectJvmTarget.toString()
-                freeCompilerArgs = freeCompilerArgs + "-Xopt-in=kotlin.RequiresOptIn"
+                freeCompilerArgs = freeCompilerArgs + "-Xopt-in=kotlin.RequiresOptIn,de.nycode.rabbitkt.annotations.KotlinRabbitInternals"
             }
         }
         withType<Test> {

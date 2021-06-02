@@ -15,13 +15,15 @@
  *
  */
 
-package de.nycode.rabbitkt.annotations
+package de.nycode.rabbitkt.serialization
 
-/**
- * Marks internal APIs which are only supposed to be used by rabbitkt internally.
- */
-@MustBeDocumented
-@Retention(AnnotationRetention.BINARY)
-@RequiresOptIn("This API is not intended be used publicly.", RequiresOptIn.Level.WARNING)
-@Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY)
-public annotation class KotlinRabbitInternals
+import de.nycode.rabbitkt.plugin.PluginHolder
+
+public object Serialization : PluginHolder<SerializationPluginConfiguration, SerializationPlugin>("Serialization") {
+
+    override fun createInstance(configuration: SerializationPluginConfiguration): SerializationPlugin {
+        return SerializationPlugin(configuration)
+    }
+
+    override fun createDefaultConfiguration(): SerializationPluginConfiguration = SerializationPluginConfiguration()
+}

@@ -15,14 +15,13 @@
  *
  */
 
-import de.nycode.rabbitkt.annotations.KotlinRabbitInternals
 import de.nycode.rabbitkt.serialization.SerializationProvider
 import de.nycode.rabbitkt.serialization.kotlinx.core.KotlinRabbitSerializationRepository
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.protobuf.ProtoBuf
 import kotlin.reflect.KClass
 
-@OptIn(KotlinRabbitInternals::class, ExperimentalSerializationApi::class)
+@OptIn(ExperimentalSerializationApi::class)
 public class KotlinxSerializationProtobufProvider(private val protobuf: ProtoBuf) : SerializationProvider {
 
     override fun <T : Any> serialize(value: T, type: KClass<T>): ByteArray {

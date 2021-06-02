@@ -17,18 +17,22 @@
 
 package de.nycode.rabbitkt.exchange
 
+import de.nycode.rabbitkt.KotlinRabbitClient
 import de.nycode.rabbitkt.binding.ExchangeBinding
 import de.nycode.rabbitkt.binding.QueueBinding
 import de.nycode.rabbitkt.queue.Queue
 import de.nycode.rabbitkt.sender.CoroutineSenderImpl
+import kotlinx.coroutines.flow.Flow
+import reactor.rabbitmq.OutboundMessage
 
 /**
  * Represents an exchange in a RabbitMQ Broker.
  */
 public data class Exchange internal constructor(
-    public val name: String,
-    public val type: ExchangeType,
-    private val sender: CoroutineSenderImpl
+    val name: String,
+    val type: ExchangeType,
+    val sender: CoroutineSenderImpl,
+    val client: KotlinRabbitClient
 ) {
     /**
      * Bind this exchange to another exchange.
@@ -59,5 +63,13 @@ public data class Exchange internal constructor(
      */
     public suspend fun delete(ifUnused: Boolean = true) {
         sender.deleteExchange(name, type, ifUnused)
+    }
+
+    public suspend fun send(vararg messages: OutboundMessage) {
+        sender.send(*messages)
+    }
+
+    public suspend fun send(messages: Flow<OutboundMessage>) {
+        sender.sendFlow(messages)
     }
 }

@@ -22,7 +22,6 @@ import de.nycode.rabbitkt.serialization.kotlinx.core.KotlinRabbitSerializationRe
 import kotlinx.serialization.json.Json
 import kotlin.reflect.KClass
 
-@OptIn(KotlinRabbitInternals::class)
 public class KotlinxSerializationJsonProvider(private val json: Json) : SerializationProvider {
 
     override fun <T : Any> serialize(value: T, type: KClass<T>): ByteArray {
