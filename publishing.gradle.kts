@@ -16,7 +16,6 @@
  */
 import de.nycode.rabbitkt.gradle.*
 
-apply(plugin = "org.jetbrains.dokka")
 apply(plugin = "org.gradle.maven-publish")
 apply(plugin = "org.gradle.signing")
 
@@ -26,9 +25,10 @@ val sonatypePassword = System.getenv("SONATYPE_PASSWORD") ?: findProperty("sonat
 val isSnapshot = version.toString().endsWith("SNAPSHOT")
 
 val dokkaJar by tasks.registering(Jar::class) {
-    dependsOn("dokkaHtml")
     archiveClassifier.set("javadoc")
-    from(tasks.getByName("dokkaHtml"))
+    val dokkaHtml = project.tasks.findByName("dokkaHtml") ?: return@registering
+    dependsOn(dokkaHtml)
+    from(dokkaHtml)
 }
 
 val configurePublishing: PublishingExtension.() -> Unit = {

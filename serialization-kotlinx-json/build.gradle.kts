@@ -18,7 +18,6 @@
 plugins {
     kotlin("jvm")
     kotlin("plugin.serialization")
-    dokka
     `maven-publish`
 }
 
@@ -36,3 +35,5 @@ dependencies {
     testRuntimeOnly("org.junit.jupiter", "junit-jupiter-engine", Versions.`junit-jupter`)
     testImplementation("io.strikt", "strikt-core", Versions.`strikt-core`)
 }
+
+apply(from = rootProject.file("publishing.gradle.kts"))

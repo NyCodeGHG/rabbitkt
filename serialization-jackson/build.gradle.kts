@@ -18,7 +18,6 @@
 plugins {
     kotlin("jvm")
     kotlin("plugin.serialization")
-    dokka
     `maven-publish`
 }
 
@@ -29,3 +28,5 @@ kotlin {
 dependencies {
     implementation(project(":serialization"))
 }
+
+apply(from = rootProject.file("publishing.gradle.kts"))
