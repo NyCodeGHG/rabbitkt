@@ -15,19 +15,15 @@
  *
  */
 
-plugins {
-    kotlin("jvm")
-    kotlin("plugin.serialization")
-    dokka
-    `maven-publish`
-}
+package de.nycode.rabbitkt.plugins
 
-kotlin {
-    explicitApi()
+/**
+ * Interface used for marking configuration classes of [Plugin]s.
+ */
+public interface PluginConfiguration {
+    /**
+     * Used for validating the configuration
+     * @return true when the configuration is valid. false when it's invalid
+     */
+    public val isValid: Boolean
 }
-
-dependencies {
-    implementation(project(":annotations"))
-}
-
-apply(from = rootProject.file("publishing.gradle.kts"))

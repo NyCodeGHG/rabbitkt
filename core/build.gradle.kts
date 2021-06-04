@@ -27,9 +27,6 @@ kotlin {
 }
 
 dependencies {
-    api(project(":annotations"))
-    api(project(":plugins"))
-
     implementation("io.projectreactor.rabbitmq", "reactor-rabbitmq", Versions.`reactor-rabbitmq`)
 
     implementation("org.slf4j", "slf4j-api", Versions.`slf4j-api`)

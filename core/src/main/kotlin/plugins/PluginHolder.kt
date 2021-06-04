@@ -15,15 +15,21 @@
  *
  */
 
-plugins {
-    kotlin("jvm")
-    kotlin("plugin.serialization")
-    dokka
-    `maven-publish`
-}
+package de.nycode.rabbitkt.plugins
 
-kotlin {
-    explicitApi()
-}
+import de.nycode.rabbitkt.annotations.KotlinRabbitInternals
 
-apply(from = rootProject.file("publishing.gradle.kts"))
+public abstract class PluginHolder<C : PluginConfiguration, P : Plugin<C>>(name: String? = null) {
+
+    private val optionalName: String? = name
+
+    public val name: String
+        get() =
+            optionalName ?: this::class.qualifiedName ?: "Unable to find plugin class"
+
+    @KotlinRabbitInternals
+    public abstract fun createInstance(configuration: C): P
+
+    @KotlinRabbitInternals
+    public abstract fun createDefaultConfiguration(): C
+}

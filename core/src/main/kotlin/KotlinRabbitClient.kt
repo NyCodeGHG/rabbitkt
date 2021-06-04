@@ -23,9 +23,9 @@ import de.nycode.rabbitkt.annotations.KotlinRabbitInternals
 import de.nycode.rabbitkt.exchange.Exchange
 import de.nycode.rabbitkt.exchange.ExchangeBuilder
 import de.nycode.rabbitkt.exchange.ExchangeType
-import de.nycode.rabbitkt.plugin.Plugin
-import de.nycode.rabbitkt.plugin.PluginConfiguration
-import de.nycode.rabbitkt.plugin.PluginHolder
+import de.nycode.rabbitkt.plugins.Plugin
+import de.nycode.rabbitkt.plugins.PluginConfiguration
+import de.nycode.rabbitkt.plugins.PluginHolder
 import de.nycode.rabbitkt.queue.Queue
 import de.nycode.rabbitkt.queue.QueueBuilder
 import de.nycode.rabbitkt.receiver.AcknowledgeHandler

@@ -17,7 +17,7 @@
 
 package de.nycode.rabbitkt.serialization
 
-import de.nycode.rabbitkt.plugin.PluginConfiguration
+import de.nycode.rabbitkt.plugins.PluginConfiguration
 
 public class SerializationPluginConfiguration(
     public var provider: SerializationProvider? = null
