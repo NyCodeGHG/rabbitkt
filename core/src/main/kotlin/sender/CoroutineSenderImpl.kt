@@ -70,7 +70,7 @@ public class CoroutineSenderImpl(private val client: KotlinRabbitClient, private
         builder: ExchangeBuilder.() -> Unit
     ): Exchange {
         declareExchangeReactive(name, type, builder).awaitSingle()
-        return Exchange(name, type, this, client)
+        return Exchange(name, type, client)
     }
 
     private fun declareQueueReactive(
@@ -92,7 +92,7 @@ public class CoroutineSenderImpl(private val client: KotlinRabbitClient, private
      */
     override suspend fun declareQueue(name: String, builder: QueueBuilder.() -> Unit): Queue {
         val result = declareQueueReactive(name, builder).awaitSingle()
-        return Queue(result.queue, this)
+        return Queue(result.queue, client)
     }
 
     private fun bindExchangeReactive(
@@ -219,7 +219,7 @@ public class CoroutineSenderImpl(private val client: KotlinRabbitClient, private
      * Send outbound messages.
      * If you want to to send messages via a flow, use [sendFlow].
      * When you want to make sure the messages were sent correctly,
-     * use [sendAndConfirm] or [sendAndConfirmAsync].
+     * use [sendAndConfirmFlow] or [sendAndConfirmAsync].
      * This member function is just like fire and forget.
      * @param messages the messages to send
      */
@@ -235,7 +235,7 @@ public class CoroutineSenderImpl(private val client: KotlinRabbitClient, private
      * @param messages the messages to send via a [Flow]
      * @param action the action which gets called for every confirmation response.
      */
-    override suspend fun sendAndConfirm(
+    override suspend fun sendAndConfirmFlow(
         messages: Flow<OutboundMessage>,
         action: suspend (OutboundMessageResult<OutboundMessage>) -> Unit
     ): Unit =

@@ -21,7 +21,6 @@ import de.nycode.rabbitkt.KotlinRabbitClient
 import de.nycode.rabbitkt.binding.ExchangeBinding
 import de.nycode.rabbitkt.binding.QueueBinding
 import de.nycode.rabbitkt.queue.Queue
-import de.nycode.rabbitkt.sender.CoroutineSenderImpl
 import kotlinx.coroutines.flow.Flow
 import reactor.rabbitmq.OutboundMessage
 
@@ -31,9 +30,11 @@ import reactor.rabbitmq.OutboundMessage
 public data class Exchange internal constructor(
     val name: String,
     val type: ExchangeType,
-    val sender: CoroutineSenderImpl,
     val client: KotlinRabbitClient
 ) {
+
+    private val sender = client.asCoroutineSender()
+
     /**
      * Bind this exchange to another exchange.
      * Every message sent to this exchange will also get sent to the other
@@ -43,7 +44,7 @@ public data class Exchange internal constructor(
      */
     public suspend fun bindTo(destination: Exchange, routingKey: String = ""): ExchangeBinding {
         sender.bindExchange(name, routingKey, destination.name)
-        return ExchangeBinding(this, destination, routingKey, sender)
+        return ExchangeBinding(this, destination, routingKey, client)
     }
 
     /**
@@ -55,7 +56,7 @@ public data class Exchange internal constructor(
      */
     public suspend fun bindTo(destination: Queue, routingKey: String = ""): QueueBinding {
         sender.bindQueue(name, routingKey, destination.name)
-        return QueueBinding(this, destination, routingKey, sender)
+        return QueueBinding(this, destination, routingKey, client)
     }
 
     /**

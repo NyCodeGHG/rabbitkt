@@ -15,21 +15,17 @@
  *
  */
 
-package de.nycode.rabbitkt.binding
+package de.nycode.rabbitkt.serialization
 
-import de.nycode.rabbitkt.KotlinRabbitClient
-import de.nycode.rabbitkt.exchange.Exchange
+import de.nycode.rabbitkt.queue.Queue
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.mapNotNull
 
-/**
- * Represents a binding between two exchanges.
- */
-public data class ExchangeBinding internal constructor(
-    val source: Exchange,
-    val destination: Exchange,
-    val routingKey: String,
-    val client: KotlinRabbitClient
-) : Binding {
-    public override suspend fun unbind() {
-        client.asCoroutineSender().unbindExchange(source.name, routingKey, destination.name)
+public inline fun <reified T : Any> Queue.receiveTyped(autoAck: Boolean): Flow<T> {
+    val provider = client.serializationProvider
+    return receive(autoAck).mapNotNull { delivery ->
+        runCatching<Queue, T> {
+            provider.deserialize(delivery.body)
+        }.getOrNull()
     }
 }

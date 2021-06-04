@@ -17,29 +17,55 @@
 
 package de.nycode.rabbitkt
 
+import com.rabbitmq.client.ConnectionFactory
+import com.rabbitmq.client.Delivery
 import de.nycode.rabbitkt.annotations.KotlinRabbitInternals
+import de.nycode.rabbitkt.exchange.Exchange
+import de.nycode.rabbitkt.exchange.ExchangeBuilder
+import de.nycode.rabbitkt.exchange.ExchangeType
 import de.nycode.rabbitkt.plugin.Plugin
 import de.nycode.rabbitkt.plugin.PluginConfiguration
 import de.nycode.rabbitkt.plugin.PluginHolder
+import de.nycode.rabbitkt.queue.Queue
+import de.nycode.rabbitkt.queue.QueueBuilder
+import de.nycode.rabbitkt.receiver.AcknowledgeHandler
 import de.nycode.rabbitkt.receiver.CoroutineReceiver
+import de.nycode.rabbitkt.receiver.CoroutineReceiverImpl
 import de.nycode.rabbitkt.sender.CoroutineSender
 import de.nycode.rabbitkt.sender.CoroutineSenderImpl
+import de.nycode.rabbitkt.utils.withNIO
+import kotlinx.coroutines.flow.Flow
 import reactor.rabbitmq.*
-import java.io.Closeable
 
-public class KotlinRabbitClient internal constructor(configuration: KotlinRabbitClientConfiguration) : Closeable {
+public class KotlinRabbitClient internal constructor(
+    configuration: KotlinRabbitClientConfiguration,
+) : CoroutineSender, CoroutineReceiver {
 
     @KotlinRabbitInternals
     @PublishedApi
     internal val plugins: Map<PluginHolder<*, *>, Plugin<*>> = configuration.plugins
 
-    override fun close() {
-        plugins.values.forEach(Plugin<*>::shutdown)
-    }
+    private val connection = configuration.connectionFactory.withNIO()
+
+    private val sender = CoroutineSenderImpl(
+        this,
+        RabbitFlux.createSender(SenderOptions().connectionFactory(connection))
+    )
+
+    private val receiver = CoroutineReceiverImpl(
+        this,
+        RabbitFlux.createReceiver(ReceiverOptions().connectionFactory(connection))
+    )
 
     public inline fun <reified T : Plugin<*>> getPlugin(): T? {
         return plugins.values.filterIsInstance<T>().firstOrNull()
     }
+
+    @KotlinRabbitInternals
+    public fun asCoroutineSender(): CoroutineSenderImpl = sender
+
+    @KotlinRabbitInternals
+    public fun asCoroutineReceiver(): CoroutineReceiverImpl = receiver
 
     /**
      * Create a new [Sender] and configure it with the [builder].
@@ -47,7 +73,9 @@ public class KotlinRabbitClient internal constructor(configuration: KotlinRabbit
      * @return The newly created sender
      */
     public fun createSender(builder: SenderOptions.() -> Unit = {}): CoroutineSender {
-        val senderOptions = SenderOptions().apply(builder)
+        val senderOptions = SenderOptions().apply(builder).apply {
+            connectionFactory(connection)
+        }
         return CoroutineSenderImpl(this, RabbitFlux.createSender(senderOptions))
     }
 
@@ -57,12 +85,64 @@ public class KotlinRabbitClient internal constructor(configuration: KotlinRabbit
      * @return The newly created receiver
      */
     public fun createReceiver(builder: ReceiverOptions.() -> Unit = {}): CoroutineReceiver {
-        val receiverOptions = ReceiverOptions().apply(builder)
-        return CoroutineReceiver(this, RabbitFlux.createReceiver(receiverOptions))
+        val receiverOptions = ReceiverOptions().apply(builder).apply {
+            connectionFactory(connection)
+        }
+        return CoroutineReceiverImpl(this, RabbitFlux.createReceiver(receiverOptions))
     }
+
+    override fun close() {
+        sender.close()
+        receiver.close()
+    }
+
+    override fun consumeAutoAckFlow(queue: String): Flow<Delivery> = receiver.consumeAutoAckFlow(queue)
+
+    override suspend fun consumeAutoAck(queue: String, handler: suspend (Delivery) -> Unit): Unit =
+        receiver.consumeAutoAck(queue, handler)
+
+    override fun consume(queue: String): Flow<AcknowledgableDelivery> = receiver.consume(queue)
+
+    override suspend fun consume(queue: String, handler: suspend AcknowledgeHandler.() -> Unit): Unit =
+        receiver.consume(queue, handler)
+
+    override suspend fun declareExchange(
+        name: String,
+        type: ExchangeType,
+        builder: ExchangeBuilder.() -> Unit
+    ): Exchange = sender.declareExchange(name, type, builder)
+
+    override suspend fun declareQueue(name: String, builder: QueueBuilder.() -> Unit): Queue =
+        sender.declareQueue(name, builder)
+
+    override suspend fun sendFlow(messages: Flow<OutboundMessage>): Unit = sender.sendFlow(messages)
+
+    override suspend fun send(vararg messages: OutboundMessage): Unit = sender.send(*messages)
+
+    override suspend fun sendAndConfirmFlow(
+        messages: Flow<OutboundMessage>,
+        action: suspend (OutboundMessageResult<OutboundMessage>) -> Unit
+    ): Unit = sender.sendAndConfirmFlow(messages, action)
+
+    override fun sendAndConfirmAsync(messages: Flow<OutboundMessage>): Flow<OutboundMessageResult<OutboundMessage>> =
+        sender.sendAndConfirmAsync(messages)
+
+    override suspend fun sendAndConfirm(
+        vararg messages: OutboundMessage,
+        action: suspend (OutboundMessageResult<OutboundMessage>) -> Unit
+    ): Unit = sender.sendAndConfirm(*messages) {
+        action(it)
+    }
+
+    override fun sendAndConfirmAsync(vararg messages: OutboundMessage): Flow<OutboundMessageResult<OutboundMessage>> =
+        sender.sendAndConfirmAsync(*messages)
+
+    override fun asSender(): Sender = sender.asSender()
 }
 
-public class KotlinRabbitClientConfiguration internal constructor() {
+public class KotlinRabbitClientConfiguration internal constructor(
+    public var connectionFactory: ConnectionFactory = ConnectionFactory()
+) {
 
     @KotlinRabbitInternals
     @PublishedApi

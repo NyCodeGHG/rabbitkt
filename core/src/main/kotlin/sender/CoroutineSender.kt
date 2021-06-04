@@ -56,17 +56,17 @@ public interface CoroutineSender : Closeable {
      * If you just want to send messages, use the [send]
      * @param messages the message flow
      */
-    public suspend fun sendFlow(messages: Flow<OutboundMessage>): Unit
+    public suspend fun sendFlow(messages: Flow<OutboundMessage>)
 
     /**
      * Send outbound messages.
      * If you want to to send messages via a flow, use [sendFlow].
      * When you want to make sure the messages were sent correctly,
-     * use [sendAndConfirm] or [sendAndConfirmAsync].
+     * use [sendAndConfirmFlow] or [sendAndConfirmAsync].
      * This member function is just like fire and forget.
      * @param messages the messages to send
      */
-    public suspend fun send(vararg messages: OutboundMessage): Unit
+    public suspend fun send(vararg messages: OutboundMessage)
 
     /**
      * Sends all messages from the [messages] flow and suspends until
@@ -75,10 +75,10 @@ public interface CoroutineSender : Closeable {
      * @param messages the messages to send via a [Flow]
      * @param action the action which gets called for every confirmation response.
      */
-    public suspend fun sendAndConfirm(
+    public suspend fun sendAndConfirmFlow(
         messages: Flow<OutboundMessage>,
         action: suspend (OutboundMessageResult<OutboundMessage>) -> Unit = {}
-    ): Unit
+    )
 
     /**
      * Send all [messages] from a [Flow] to your broker and
@@ -100,7 +100,7 @@ public interface CoroutineSender : Closeable {
     public suspend fun sendAndConfirm(
         vararg messages: OutboundMessage,
         action: suspend (OutboundMessageResult<OutboundMessage>) -> Unit = {}
-    ): Unit
+    )
 
     /**
      * Sends all [messages] to your broker.
