@@ -51,14 +51,14 @@ internal class CoroutineSenderTest {
 
     @BeforeEach
     fun setup() {
-        sender = createRabbitClient().createSender {
-            connectionFactory(ConnectionFactory().apply {
+        sender = createRabbitClient {
+            connectionFactory = ConnectionFactory().apply {
                 host = rabbit.host
                 port = rabbit.amqpPort
                 username = rabbit.adminUsername
                 password = rabbit.adminPassword
-            })
-        } as CoroutineSenderImpl
+            }
+        }.createSender() as CoroutineSenderImpl
     }
 
     @AfterEach
