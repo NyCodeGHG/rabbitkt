@@ -15,23 +15,21 @@
  *
  */
 
-package de.nycode.rabbitkt.queue
-
-import com.rabbitmq.client.Delivery
-import de.nycode.rabbitkt.KotlinRabbitClient
-import kotlinx.coroutines.flow.Flow
-
-public class Queue internal constructor(
-    public val name: String,
-    public val client: KotlinRabbitClient
-) {
-
-    public fun receive(autoAck: Boolean = true): Flow<Delivery> {
-        return if (autoAck) {
-            client.consumeAutoAckFlow(name)
-        } else {
-            client.consume(name)
-        }
-    }
-
+plugins {
+    kotlin("jvm")
+    kotlin("plugin.serialization")
+    `maven-publish`
 }
+
+kotlin {
+    explicitApi()
+}
+
+dependencies {
+    implementation(project(":core"))
+    implementation(project(":serialization"))
+    implementation(kotlin("reflect"))
+    implementation("org.jetbrains.kotlinx", "kotlinx-serialization-core", Versions.`kotlinx-serialization`)
+}
+
+apply(from = rootProject.file("publishing.gradle.kts"))

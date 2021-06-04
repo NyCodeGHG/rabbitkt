@@ -15,23 +15,17 @@
  *
  */
 
-package de.nycode.rabbitkt.queue
+package de.nycode.rabbitkt.serialization
 
-import com.rabbitmq.client.Delivery
-import de.nycode.rabbitkt.KotlinRabbitClient
+import de.nycode.rabbitkt.queue.Queue
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.mapNotNull
 
-public class Queue internal constructor(
-    public val name: String,
-    public val client: KotlinRabbitClient
-) {
-
-    public fun receive(autoAck: Boolean = true): Flow<Delivery> {
-        return if (autoAck) {
-            client.consumeAutoAckFlow(name)
-        } else {
-            client.consume(name)
-        }
+public inline fun <reified T : Any> Queue.receiveTyped(autoAck: Boolean): Flow<T> {
+    val provider = client.serializationProvider
+    return receive(autoAck).mapNotNull { delivery ->
+        runCatching<Queue, T> {
+            provider.deserialize(delivery.body)
+        }.getOrNull()
     }
-
 }

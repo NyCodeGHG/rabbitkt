@@ -15,23 +15,20 @@
  *
  */
 
-package de.nycode.rabbitkt.queue
+package de.nycode.rabbitkt.serialization
 
-import com.rabbitmq.client.Delivery
 import de.nycode.rabbitkt.KotlinRabbitClient
-import kotlinx.coroutines.flow.Flow
+import de.nycode.rabbitkt.annotations.KotlinRabbitInternals
 
-public class Queue internal constructor(
-    public val name: String,
-    public val client: KotlinRabbitClient
-) {
-
-    public fun receive(autoAck: Boolean = true): Flow<Delivery> {
-        return if (autoAck) {
-            client.consumeAutoAckFlow(name)
-        } else {
-            client.consume(name)
-        }
-    }
-
+@KotlinRabbitInternals
+public fun KotlinRabbitClient.getSerializationPlugin(): SerializationPlugin {
+    val plugin: SerializationPlugin? = getPlugin()
+    requireNotNull(plugin) { "Serialization must be installed when using Serialization extensions." }
+    return plugin
 }
+
+@KotlinRabbitInternals
+@PublishedApi
+internal val KotlinRabbitClient.serializationProvider: SerializationProvider
+    get() =
+        requireNotNull(getSerializationPlugin().provider) { "There is no serialization provider installed!" }

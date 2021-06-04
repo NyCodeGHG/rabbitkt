@@ -15,23 +15,19 @@
  *
  */
 
-package de.nycode.rabbitkt.queue
+package de.nycode.rabbitkt.serialization
 
-import com.rabbitmq.client.Delivery
-import de.nycode.rabbitkt.KotlinRabbitClient
+import de.nycode.rabbitkt.exchange.Exchange
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
+import reactor.rabbitmq.OutboundMessage
 
-public class Queue internal constructor(
-    public val name: String,
-    public val client: KotlinRabbitClient
-) {
+public suspend inline fun <reified T : Any> Exchange.send(message: T, routingKey: String = "") {
+    val serializedMessage = client.serializationProvider.serialize(message)
+    send(OutboundMessage(name, routingKey, serializedMessage))
+}
 
-    public fun receive(autoAck: Boolean = true): Flow<Delivery> {
-        return if (autoAck) {
-            client.consumeAutoAckFlow(name)
-        } else {
-            client.consume(name)
-        }
-    }
-
+public suspend inline fun <reified T : Any> Exchange.send(messageFlow: Flow<T>, routingKey: String) {
+    val provider = client.serializationProvider
+    send(messageFlow.map(provider::serialize).map { OutboundMessage(name, routingKey, it) })
 }

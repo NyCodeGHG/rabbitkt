@@ -27,26 +27,10 @@ kotlin {
 }
 
 dependencies {
+    implementation(project(":core"))
     implementation("io.projectreactor.rabbitmq", "reactor-rabbitmq", Versions.`reactor-rabbitmq`)
-
-    implementation("org.slf4j", "slf4j-api", Versions.`slf4j-api`)
     implementation("org.jetbrains.kotlinx", "kotlinx-coroutines-core", Versions.`kotlinx-coroutines`)
     implementation("org.jetbrains.kotlinx", "kotlinx-coroutines-reactor", Versions.`kotlinx-coroutines`)
-    implementation("org.jetbrains.kotlinx", "kotlinx-serialization-core", Versions.`kotlinx-serialization`)
-
-    // Test Dependencies
-    testImplementation("org.junit.jupiter", "junit-jupiter-api", Versions.`junit-jupter`)
-    testImplementation("org.junit.jupiter", "junit-jupiter-params", Versions.`junit-jupter`)
-    testImplementation("io.strikt", "strikt-core", Versions.`strikt-core`)
-    testImplementation("org.jetbrains.kotlinx", "kotlinx-coroutines-test", Versions.`kotlinx-coroutines`)
-    testImplementation(platform("org.testcontainers:testcontainers-bom:${Versions.testcontainers}"))
-    testImplementation("org.testcontainers", "testcontainers")
-    testImplementation("org.testcontainers", "junit-jupiter")
-    testImplementation("org.testcontainers", "rabbitmq")
-    testImplementation("org.jetbrains.kotlinx", "kotlinx-serialization-json", Versions.`kotlinx-serialization`)
-
-    testRuntimeOnly("org.junit.jupiter", "junit-jupiter-engine", Versions.`junit-jupter`)
-    testRuntimeOnly("ch.qos.logback", "logback-classic", "1.2.3")
 }
 
 apply(from = rootProject.file("publishing.gradle.kts"))

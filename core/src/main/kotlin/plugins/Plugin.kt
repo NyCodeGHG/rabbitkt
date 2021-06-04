@@ -15,23 +15,9 @@
  *
  */
 
-package de.nycode.rabbitkt.queue
+package de.nycode.rabbitkt.plugins
 
-import com.rabbitmq.client.Delivery
-import de.nycode.rabbitkt.KotlinRabbitClient
-import kotlinx.coroutines.flow.Flow
-
-public class Queue internal constructor(
-    public val name: String,
-    public val client: KotlinRabbitClient
-) {
-
-    public fun receive(autoAck: Boolean = true): Flow<Delivery> {
-        return if (autoAck) {
-            client.consumeAutoAckFlow(name)
-        } else {
-            client.consume(name)
-        }
-    }
-
+public abstract class Plugin<C>(protected val configuration: C, public val name: String? = null) {
+    public abstract fun initialization()
+    public abstract fun shutdown()
 }

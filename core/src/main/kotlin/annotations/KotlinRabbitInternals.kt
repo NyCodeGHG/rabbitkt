@@ -15,23 +15,13 @@
  *
  */
 
-package de.nycode.rabbitkt.queue
+package de.nycode.rabbitkt.annotations
 
-import com.rabbitmq.client.Delivery
-import de.nycode.rabbitkt.KotlinRabbitClient
-import kotlinx.coroutines.flow.Flow
-
-public class Queue internal constructor(
-    public val name: String,
-    public val client: KotlinRabbitClient
-) {
-
-    public fun receive(autoAck: Boolean = true): Flow<Delivery> {
-        return if (autoAck) {
-            client.consumeAutoAckFlow(name)
-        } else {
-            client.consume(name)
-        }
-    }
-
-}
+/**
+ * Marks internal APIs which are only supposed to be used by rabbitkt internally.
+ */
+@MustBeDocumented
+@Retention(AnnotationRetention.BINARY)
+@RequiresOptIn("This API is not intended be used publicly.", RequiresOptIn.Level.WARNING)
+@Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY)
+public annotation class KotlinRabbitInternals

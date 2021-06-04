@@ -15,23 +15,20 @@
  *
  */
 
-package de.nycode.rabbitkt.queue
+@Suppress("ObjectPropertyName")
+object Versions {
 
-import com.rabbitmq.client.Delivery
-import de.nycode.rabbitkt.KotlinRabbitClient
-import kotlinx.coroutines.flow.Flow
+    const val `kotlinx-coroutines` = "1.5.0"
 
-public class Queue internal constructor(
-    public val name: String,
-    public val client: KotlinRabbitClient
-) {
+    const val `junit-jupter` = "5.7.2"
 
-    public fun receive(autoAck: Boolean = true): Flow<Delivery> {
-        return if (autoAck) {
-            client.consumeAutoAckFlow(name)
-        } else {
-            client.consume(name)
-        }
-    }
+    const val `kotlinx-serialization` = "1.2.1"
 
+    const val `reactor-rabbitmq` = "1.5.2"
+
+    const val `slf4j-api` = "1.7.30"
+
+    const val `strikt-core` = "0.31.0"
+
+    const val testcontainers = "1.15.3"
 }

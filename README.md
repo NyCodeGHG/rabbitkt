@@ -71,3 +71,8 @@ use maven, here's your snippet.
     </dependency>
 </dependencies>
 ```
+
+## Credits
+
+Many parts of this library were heavily inspired by [kmongo](https://github.com/Litote/kmongo). Thank you for your
+awesome work <3.

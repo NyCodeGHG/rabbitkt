@@ -18,10 +18,8 @@
 package de.nycode.rabbitkt.sender
 
 import com.rabbitmq.client.ConnectionFactory
-import de.nycode.rabbitkt.KotlinRabbit
+import de.nycode.rabbitkt.createRabbitClient
 import de.nycode.rabbitkt.exchange.ExchangeType.DIRECT
-import de.nycode.rabbitkt.receiver.CoroutineReceiver
-import de.nycode.rabbitkt.receiver.coroutine
 import de.nycode.rabbitkt.sender.BindingKind.EXCHANGE
 import de.nycode.rabbitkt.sender.BindingKind.QUEUE
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -43,7 +41,7 @@ import strikt.assertions.*
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 internal class CoroutineSenderTest {
 
-    private var sender: CoroutineSender? = null
+    private var sender: CoroutineSenderImpl? = null
 
     companion object {
         @Container
@@ -53,14 +51,14 @@ internal class CoroutineSenderTest {
 
     @BeforeEach
     fun setup() {
-        sender = KotlinRabbit.createSender {
-            connectionFactory(ConnectionFactory().apply {
+        sender = createRabbitClient {
+            connectionFactory = ConnectionFactory().apply {
                 host = rabbit.host
                 port = rabbit.amqpPort
                 username = rabbit.adminUsername
                 password = rabbit.adminPassword
-            })
-        }.coroutine
+            }
+        }.createSender() as CoroutineSenderImpl
     }
 
     @AfterEach
@@ -186,7 +184,7 @@ internal class CoroutineSenderTest {
 
         expectThat(rabbit).hasExchange(exchangeName)
 
-        sender!!.deleteExchange(exchangeName, DIRECT, true) {}
+        sender!!.deleteExchange(exchangeName, DIRECT, true)
 
         expectThat(rabbit).not().hasExchange(exchangeName)
     }

@@ -15,23 +15,21 @@
  *
  */
 
-package de.nycode.rabbitkt.queue
+package de.nycode.rabbitkt.plugins
 
-import com.rabbitmq.client.Delivery
-import de.nycode.rabbitkt.KotlinRabbitClient
-import kotlinx.coroutines.flow.Flow
+import de.nycode.rabbitkt.annotations.KotlinRabbitInternals
 
-public class Queue internal constructor(
-    public val name: String,
-    public val client: KotlinRabbitClient
-) {
+public abstract class PluginHolder<C : PluginConfiguration, P : Plugin<C>>(name: String? = null) {
 
-    public fun receive(autoAck: Boolean = true): Flow<Delivery> {
-        return if (autoAck) {
-            client.consumeAutoAckFlow(name)
-        } else {
-            client.consume(name)
-        }
-    }
+    private val optionalName: String? = name
 
+    public val name: String
+        get() =
+            optionalName ?: this::class.qualifiedName ?: "Unable to find plugin class"
+
+    @KotlinRabbitInternals
+    public abstract fun createInstance(configuration: C): P
+
+    @KotlinRabbitInternals
+    public abstract fun createDefaultConfiguration(): C
 }
