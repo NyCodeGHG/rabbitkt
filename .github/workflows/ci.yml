@@ -112,6 +112,7 @@ jobs:
       - name: Publish
         run: ./gradlew build publish -x test
         env:
+          GRADLE_OPTS: -Xmx6G
           SONATYPE_USER: ${{ secrets.SONATYPE_USER }}
           SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
           SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
