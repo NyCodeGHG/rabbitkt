@@ -26,6 +26,6 @@ public inline fun <reified T : Any> Queue.receiveTyped(autoAck: Boolean): Flow<T
     return receive(autoAck).mapNotNull { delivery ->
         runCatching<Queue, T> {
             provider.deserialize(delivery.body)
-        }.getOrNull()
+        }.getOrThrow()
     }
 }
