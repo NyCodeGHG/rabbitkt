@@ -24,6 +24,11 @@ val sonatypePassword = System.getenv("SONATYPE_PASSWORD") ?: findProperty("sonat
 
 val isSnapshot = version.toString().endsWith("SNAPSHOT")
 
+val sourcesJar by tasks.registering(Jar::class) {
+    archiveClassifier.set("sources")
+    from(project.extensions.getByName<SourceSetContainer>("sourceSets").named("main").get().allSource)
+}
+
 val dokkaJar by tasks.registering(Jar::class) {
     archiveClassifier.set("javadoc")
     val dokkaHtml = project.tasks.findByName("dokkaHtml") ?: return@registering
@@ -54,6 +59,7 @@ val configurePublishing: PublishingExtension.() -> Unit = {
             println("Creating Publication for ${project.name}")
             from(project.components["kotlin"])
             groupId = project.group.toString()
+            artifact(sourcesJar)
             artifact(dokkaJar)
             configureVersion(project, branch)
             pom {
